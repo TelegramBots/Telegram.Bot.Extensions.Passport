@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Telegram Passport - Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <h3>Redirecting...</h3>
+    <h6>
+        If that didn't work,
+        <a id="btn">CLICK HERE</a>
+    </h6>
+    <script type="application/javascript">
+        const isAndroid = /android/i.test(window.navigator.userAgent || '');
+        const url = (isAndroid ? 'tg:' : 'tg://') + 'resolve' + window.location.search;
+        document.getElementById('btn').setAttribute('href', url);
+        window.location.replace(url);
+    </script>
+</body>
+
+</html>
