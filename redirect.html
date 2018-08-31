@@ -15,10 +15,15 @@
         <a id="btn">CLICK HERE</a>
     </h6>
     <script type="application/javascript">
-        const isAndroid = /android/i.test(window.navigator.userAgent || '');
-        const url = (isAndroid ? 'tg:' : 'tg://') + 'resolve' + window.location.search;
-        document.getElementById('btn').setAttribute('href', url);
-        window.location.replace(url);
+        const btnTag = document.getElementById('btn');
+        if (window.location.search.length) {
+            const isAndroid = /android/i.test(window.navigator.userAgent || '');
+            const url = (isAndroid ? 'tg:' : 'tg://') + 'resolve' + window.location.search;
+            btnTag.setAttribute('href', url);
+            window.location.replace(url);
+        } else {
+            btnTag.innerText = "Invalid! Query string is not provided.";
+        }
     </script>
 </body>
 
