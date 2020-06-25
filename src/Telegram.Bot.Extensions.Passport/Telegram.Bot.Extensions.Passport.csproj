@@ -19,7 +19,15 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/TelegramBots/Telegram.Bot.Extensions.Passport/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/TelegramBots/Telegram.Bot.Extensions.Passport/master/package-icon.gif</PackageIconUrl>
     <PackageTags>Telegram;Bot;Api;Passport;Telegram Passport</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <ProjectReference Include="..\..\deps\Telegram.Bot\src\Telegram.Bot\Telegram.Bot.csproj"/>
   </ItemGroup>
