@@ -1,5 +1,7 @@
+using Telegram.Bot.Extensions;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Requests;
+using Telegram.Bot.Requests.PassportErrors;
 using Telegram.Bot.Types.Passport;
 
 // ReSharper disable once CheckNamespace
@@ -24,13 +26,15 @@ public static class TelegramBotClientPassportExtensions
     /// <param name="errors">Descriptions of the errors</param>
     /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
     /// <see href="https://core.telegram.org/bots/api#setpassportdataerrors"/>
-    public static Task SetPassportDataErrorsAsync(
+    public static async Task SetPassportDataErrorsAsync(
         this ITelegramBotClient botClient,
-        int userId,
+        long userId,
         IEnumerable<PassportElementError> errors,
         CancellationToken cancellationToken = default
     ) =>
-        botClient.MakeRequestAsync(new SetPassportDataErrorsRequest(userId, errors), cancellationToken);
+        await botClient.ThrowIfNull(nameof(botClient))
+            .MakeRequestAsync(new SetPassportDataErrorsRequest(userId, errors), cancellationToken)
+            .ConfigureAwait(false);
 
     /// <summary>
     /// Downloads an encrypted Passport file, decrypts it, and writes the content to
@@ -51,18 +55,18 @@ public static class TelegramBotClientPassportExtensions
         CancellationToken cancellationToken = default
     )
     {
-        if (passportFile == null)
+        if (passportFile is null)
             throw new ArgumentNullException(nameof(passportFile));
-        if (fileCredentials == null)
+        if (fileCredentials is null)
             throw new ArgumentNullException(nameof(fileCredentials));
-        if (destination == null)
+        if (destination is null)
             throw new ArgumentNullException(nameof(destination));
 
         Types.File fileInfo;
 
-        var encryptedContentStream = passportFile.FileSize > 0
-            ? new System.IO.MemoryStream(passportFile.FileSize)
-            : new System.IO.MemoryStream();
+        var encryptedContentStream = (passportFile.FileSize is int fileSize and > 0)
+            ? new MemoryStream(capacity: fileSize)
+            : new MemoryStream();
 
         using (encryptedContentStream)
         {

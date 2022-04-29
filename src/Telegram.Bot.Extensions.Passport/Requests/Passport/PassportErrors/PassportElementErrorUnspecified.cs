@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
 
 // ReSharper disable CheckNamespace
-namespace Telegram.Bot.Types.Passport;
+namespace Telegram.Bot.Requests.PassportErrors;
 
 /// <summary>
 /// Represents an issue in an unspecified place. The error is considered resolved when new data is added.
@@ -32,6 +33,6 @@ public class PassportElementErrorUnspecified : PassportElementError
     )
         : base("unspecified", type, message)
     {
-        ElementHash = elementHash ?? throw new ArgumentNullException(nameof(elementHash));
+        ElementHash = elementHash.ThrowIfNull(nameof(elementHash));
     }
 }

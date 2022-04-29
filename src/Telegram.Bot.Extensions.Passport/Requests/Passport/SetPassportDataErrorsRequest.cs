@@ -1,12 +1,13 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Telegram.Bot.Types.Passport;
+using Telegram.Bot.Extensions;
+using Telegram.Bot.Requests.PassportErrors;
 
-// ReSharper disable CheckNamespace
+// ReSharper disable once CheckNamespace
 namespace Telegram.Bot.Requests;
 
 /// <summary>
-/// Informs a user that some of the Telegram Passport elements they provided contains errors.
+/// Informs a user that some of the Telegram Passport elements they provided contain errors.
 /// The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of
 /// the field for which you returned the error must change). Returns True on success.
 /// Use this if the data submitted by the user doesn't satisfy the standards your service requires for any reason.
@@ -20,7 +21,7 @@ public class SetPassportDataErrorsRequest : RequestBase<bool>
     /// User identifier
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public int UserId { get; }
+    public long UserId { get; }
 
     /// <summary>
     /// Descriptions of the errors
@@ -36,10 +37,10 @@ public class SetPassportDataErrorsRequest : RequestBase<bool>
     /// <exception cref="ArgumentNullException">
     /// If <paramref name="errors"/> is null
     /// </exception>
-    public SetPassportDataErrorsRequest(int userId, IEnumerable<PassportElementError> errors)
+    public SetPassportDataErrorsRequest(long userId, IEnumerable<PassportElementError> errors)
         : base("setPassportDataErrors")
     {
         UserId = userId;
-        Errors = errors ?? throw new ArgumentNullException(nameof(errors));
+        Errors = errors.ThrowIfNull(nameof(errors));
     }
 }

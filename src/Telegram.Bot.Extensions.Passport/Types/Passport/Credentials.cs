@@ -5,20 +5,20 @@ using Newtonsoft.Json.Serialization;
 namespace Telegram.Bot.Types.Passport;
 
 /// <summary>
-/// These credentials can be used to decrypt encrypted data from the data field in <see cref="PassportData"/>.
+/// Credentials is a JSON-serialized object.
 /// </summary>
 [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-public class DataCredentials
+public class Credentials : IDecryptedValue
 {
     /// <summary>
-    /// Checksum of encrypted data
+    /// Credentials for encrypted data
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public string DataHash { get; set; }
+    public SecureData SecureData { get; set; } = default!;
 
     /// <summary>
-    /// Secret of encrypted data
+    /// Bot-specified nonce. Make sure that the payload is the same as was passed in the request.
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public string Secret { get; set; }
+    public string Nonce { get; set; } = default!;
 }

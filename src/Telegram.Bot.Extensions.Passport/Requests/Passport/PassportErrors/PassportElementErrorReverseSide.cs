@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
 
 // ReSharper disable CheckNamespace
-namespace Telegram.Bot.Types.Passport;
+namespace Telegram.Bot.Requests.PassportErrors;
 
 /// <summary>
 /// Represents an issue with the front side of a document. The error is considered resolved when the file with
@@ -33,6 +34,6 @@ public class PassportElementErrorReverseSide : PassportElementError
     )
         : base("reverse_side", type, message)
     {
-        FileHash = fileHash ?? throw new ArgumentNullException(nameof(fileHash));
+        FileHash = fileHash.ThrowIfNull(nameof(fileHash));
     }
 }

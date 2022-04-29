@@ -1,39 +1,40 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
 
 // ReSharper disable CheckNamespace
-namespace Telegram.Bot.Types.Passport;
+namespace Telegram.Bot.Requests.PassportErrors;
 
 /// <summary>
-/// Represents an issue with the selfie with a document. The error is considered resolved when the file with
-/// the selfie changes.
+/// Represents an issue with the front side of a document. The error is considered resolved when the file with
+/// the front side of the document changes.
 /// </summary>
 [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-public class PassportElementErrorSelfie : PassportElementError
+public class PassportElementErrorFrontSide : PassportElementError
 {
     /// <summary>
-    /// Base64-encoded hash of the file with the selfie
+    /// Base64-encoded hash of the file with the front side of the document
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public string FileHash { get; }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="PassportElementErrorSelfie"/> with required parameters
+    /// Initialize a new instance of <see cref="PassportElementErrorFrontSide"/> with required parameters
     /// </summary>
     /// <param name="type">
     /// The section of the user's Telegram Passport which has the issue, one of "passport", "driver_license",
     /// "identity_card", "internal_passport"
     /// </param>
-    /// <param name="fileHash">Base64-encoded hash of the file with the selfie</param>
+    /// <param name="fileHash">Base64-encoded hash of the file with the front side of the document</param>
     /// <param name="message">Error message</param>
     /// <exception cref="ArgumentNullException">if any argument is null</exception>
-    public PassportElementErrorSelfie(
+    public PassportElementErrorFrontSide(
         string type,
         string fileHash,
         string message
     )
-        : base("selfie", type, message)
+        : base("front_side", type, message)
     {
-        FileHash = fileHash ?? throw new ArgumentNullException(nameof(fileHash));
+        FileHash = fileHash.ThrowIfNull(nameof(fileHash));
     }
 }

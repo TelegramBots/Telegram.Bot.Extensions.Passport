@@ -1,7 +1,8 @@
 using Newtonsoft.Json;
+using Telegram.Bot.Extensions;
 
 // ReSharper disable once CheckNamespace
-namespace Telegram.Bot.Passport.Request;
+namespace Telegram.Bot.Requests;
 
 /// <summary>
 /// Parameters for making a Telegram Passport authorization request
@@ -12,7 +13,12 @@ public class AuthorizationRequestParameters
     /// Unique identifier for the bot. You can get it from bot token. For example, for the bot token
     /// "1234567:4TT8bAc8GHUspu3ERYn-KGcvsvGB9u_n4ddy", the bot id is 1234567.
     /// </summary>
-    public int BotId { get; }
+    public long BotId { get; }
+
+    /// <summary>
+    /// Description of the data you want to request
+    /// </summary>
+    public PassportScope Scope { get; }
 
     /// <summary>
     /// Public key of the bot
@@ -26,11 +32,6 @@ public class AuthorizationRequestParameters
     /// pseudorandom number generator. You should never accept credentials with the same nonce twice.
     /// </summary>
     public string Nonce { get; }
-
-    /// <summary>
-    /// Description of the data you want to request
-    /// </summary>
-    public PassportScope PassportScope { get; }
 
     /// <summary>
     /// Query string part of the URI generated from the parameters
@@ -63,16 +64,16 @@ public class AuthorizationRequestParameters
     /// </param>
     /// <param name="scope">Description of the data you want to request</param>
     public AuthorizationRequestParameters(
-        int botId,
+        long botId,
         string publicKey,
         string nonce,
         PassportScope scope
     )
     {
         BotId = botId;
-        PublicKey = publicKey ?? throw new ArgumentNullException(nameof(publicKey));
-        Nonce = nonce ?? throw new ArgumentNullException(nameof(nonce));
-        PassportScope = scope ?? throw new ArgumentNullException(nameof(PassportScope));
+        PublicKey = publicKey.ThrowIfNull(nameof(publicKey));
+        Nonce = nonce.ThrowIfNull(nameof(nonce));
+        Scope = scope.ThrowIfNull(nameof(scope));
 
         var scopeJson = JsonConvert.SerializeObject(scope);
 

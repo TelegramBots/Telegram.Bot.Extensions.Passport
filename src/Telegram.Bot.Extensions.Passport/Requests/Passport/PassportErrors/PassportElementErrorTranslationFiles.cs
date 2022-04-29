@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
 
 // ReSharper disable CheckNamespace
-namespace Telegram.Bot.Types.Passport;
+namespace Telegram.Bot.Requests.PassportErrors;
 
 /// <summary>
 /// Represents an issue with the translated version of a document. The error is considered resolved when a
@@ -35,6 +36,6 @@ public class PassportElementErrorTranslationFiles : PassportElementError
     )
         : base("translation_files", type, message)
     {
-        FileHashes = fileHashes ?? throw new ArgumentNullException(nameof(fileHashes));
+        FileHashes = fileHashes.ThrowIfNull(nameof(fileHashes));
     }
 }

@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
 
 // ReSharper disable CheckNamespace
-namespace Telegram.Bot.Types.Passport;
+namespace Telegram.Bot.Requests.PassportErrors;
 
 /// <summary>
 /// Represents an issue in one of the data fields that was provided by the user. The error is considered
@@ -42,7 +43,7 @@ public class PassportElementErrorDataField : PassportElementError
     )
         : base("data", type, message)
     {
-        FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
-        DataHash = dataHash ?? throw new ArgumentNullException(nameof(dataHash));
+        FieldName = fieldName.ThrowIfNull(nameof(fieldName));
+        DataHash = dataHash.ThrowIfNull(nameof(dataHash));
     }
 }

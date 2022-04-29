@@ -1,8 +1,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
+using Telegram.Bot.Requests.Abstractions;
 
 // ReSharper disable once CheckNamespace
-namespace Telegram.Bot.Passport.Request;
+namespace Telegram.Bot.Requests;
 
 /// <summary>
 /// This object represents one particular element that must be provided. If no options are needed, String
@@ -47,6 +49,6 @@ public class PassportScopeElementOne : IPassportScopeElement
     /// <exception cref="ArgumentNullException"></exception>
     public PassportScopeElementOne(string type)
     {
-        Type = type ?? throw new ArgumentNullException(nameof(type));
+        Type = type.ThrowIfNull(nameof(type));
     }
 }

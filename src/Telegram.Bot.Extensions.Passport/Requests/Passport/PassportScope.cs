@@ -1,8 +1,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
+using Telegram.Bot.Requests.Abstractions;
 
 // ReSharper disable once CheckNamespace
-namespace Telegram.Bot.Passport.Request;
+namespace Telegram.Bot.Requests;
 
 /// <summary>
 /// This object represents the data to be requested.
@@ -18,7 +20,7 @@ public class PassportScope
     public IEnumerable<IPassportScopeElement> Data { get; }
 
     /// <summary>
-    /// Scope version
+    /// Scope version, must be 1
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public int V { get; }
@@ -30,11 +32,11 @@ public class PassportScope
     /// List of requested elements, each type may be used only once in the entire array of
     /// <see cref="IPassportScopeElement"/> objects
     /// </param>
-    /// <param name="v">Scope version. Defaults to 1.</param>
+    /// <param name="v">Scope version, must be 1</param>
     /// <exception cref="ArgumentNullException"></exception>
     public PassportScope(IEnumerable<IPassportScopeElement> data, int v = 1)
     {
-        Data = data ?? throw new ArgumentNullException(nameof(data));
+        Data = data.ThrowIfNull(nameof(data));
         V = v;
     }
 }

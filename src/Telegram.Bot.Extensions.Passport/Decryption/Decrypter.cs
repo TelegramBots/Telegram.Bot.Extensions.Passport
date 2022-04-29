@@ -20,12 +20,12 @@ public class Decrypter : IDecrypter
             throw new ArgumentNullException(nameof(encryptedCredentials));
         if (key is null)
             throw new ArgumentNullException(nameof(key));
-        if (encryptedCredentials.Data is null)
-            throw new ArgumentNullException(nameof(encryptedCredentials.Data));
-        if (encryptedCredentials.Secret is null)
-            throw new ArgumentNullException(nameof(encryptedCredentials.Secret));
-        if (encryptedCredentials.Hash is null)
-            throw new ArgumentNullException(nameof(encryptedCredentials.Hash));
+        //if (encryptedCredentials.Data is null)
+        //    throw new ArgumentNullException(nameof(encryptedCredentials.Data));
+        //if (encryptedCredentials.Secret is null)
+        //    throw new ArgumentNullException(nameof(encryptedCredentials.Secret));
+        //if (encryptedCredentials.Hash is null)
+        //    throw new ArgumentNullException(nameof(encryptedCredentials.Hash));
 
         byte[] data = Convert.FromBase64String(encryptedCredentials.Data);
         if (data.Length == 0)

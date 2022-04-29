@@ -29,8 +29,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <NoWarn>$(NoWarn);CA1014</NoWarn>    <!-- Mark assemblies with CLSCompliant -->
     <NoWarn>$(NoWarn);CA1040</NoWarn>    <!-- Avoid empty interfaces-->
+    <NoWarn>$(NoWarn);CA1056</NoWarn>    <!-- Change the type of parameter 'url' from 'string' to 'System.Uri' -->
+    <NoWarn>$(NoWarn);CA1819</NoWarn>    <!-- Properties should not return arrays-->
     <NoWarn>$(NoWarn);CA1822</NoWarn>    <!-- Member does not access instance data and can be marked as static -->
+    <NoWarn>$(NoWarn);CA2208</NoWarn>
   </PropertyGroup>
 
   <!-- Make build deterministic only in CI environment to make local development easier with non-trimmed paths -->
@@ -44,6 +48,6 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" PrivateAssets="All" />
     <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="all" />
-    <PackageReference Include="Telegram.Bot" Version="17.0.0" />
+    <PackageReference Include="Telegram.Bot" Version="18.0.0-alpha.2" />
   </ItemGroup>
 </Project>

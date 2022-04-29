@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
+using Telegram.Bot.Converters;
 
 // ReSharper disable once CheckNamespace
 namespace Telegram.Bot.Types.Passport;
@@ -15,30 +16,12 @@ public class IdDocumentData : IDecryptedValue
     /// Document number
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public string DocumentNo { get; set; }
+    public string DocumentNo { get; set; } = default!;
 
     /// <summary>
     /// Optional. Date of expiry, in DD.MM.YYYY format
     /// </summary>
+    [JsonConverter(typeof(CustomDateTimeConverter))]
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string ExpiryDate { get; set; }
-
-    /// <summary>
-    /// Date of expiry if available
-    /// </summary>
-    public DateTime? Expiry
-    {
-        get
-        {
-            if (
-                !string.IsNullOrWhiteSpace(ExpiryDate) &&
-                DateTime.TryParseExact(ExpiryDate, "dd.MM.yyyy", null, DateTimeStyles.None, out var result)
-            )
-            {
-                return result;
-            }
-
-            return null;
-        }
-    }
+    public DateTime? ExpiryDate { get; set; }
 }

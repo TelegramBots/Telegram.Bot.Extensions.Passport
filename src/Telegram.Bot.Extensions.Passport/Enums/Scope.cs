@@ -1,5 +1,4 @@
 // ReSharper disable once CheckNamespace
-
 namespace Telegram.Bot;
 
 public static partial class PassportEnums

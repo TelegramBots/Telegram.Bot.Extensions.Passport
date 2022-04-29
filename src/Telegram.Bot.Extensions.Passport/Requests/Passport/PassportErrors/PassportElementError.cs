@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Extensions;
 
 // ReSharper disable CheckNamespace
-namespace Telegram.Bot.Types.Passport;
+namespace Telegram.Bot.Requests.PassportErrors;
 
 /// <summary>
 /// This object represents an error in the Telegram Passport element which was submitted that should be resolved
@@ -12,16 +13,16 @@ namespace Telegram.Bot.Types.Passport;
 public abstract class PassportElementError
 {
     /// <summary>
-    /// Error source.
-    /// </summary>
-    [JsonProperty(Required = Required.Always)]
-    public string Type { get; }
-
-    /// <summary>
     /// The section of the user's Telegram Passport which has the error.
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public string Source { get; }
+
+    /// <summary>
+    /// Error source.
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public string Type { get; }
 
     /// <summary>
     /// Error message
@@ -38,8 +39,8 @@ public abstract class PassportElementError
     /// <exception cref="ArgumentNullException">if any argument is null</exception>
     protected PassportElementError(string source, string type, string message)
     {
-        Type = type ?? throw new ArgumentNullException(nameof(type));
-        Source = source ?? throw new ArgumentNullException(nameof(source));
-        Message = message ?? throw new ArgumentNullException(nameof(message));
+        Type = type.ThrowIfNull(nameof(type));
+        Source = source.ThrowIfNull(nameof(source));
+        Message = message.ThrowIfNull(nameof(message));
     }
 }

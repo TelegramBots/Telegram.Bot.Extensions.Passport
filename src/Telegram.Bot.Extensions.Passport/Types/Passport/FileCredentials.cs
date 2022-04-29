@@ -15,11 +15,11 @@ public class FileCredentials
     /// Checksum of encrypted file
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public string FileHash { get; set; }
+    public string FileHash { get; set; } = default!;
 
     /// <summary>
     /// Secret of encrypted file
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public string Secret { get; set; }
+    public string Secret { get; set; } = default!;
 }
