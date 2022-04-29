@@ -1,10 +1,10 @@
-using System.IO;
-using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace Quickstart
 {
@@ -20,10 +20,10 @@ namespace Quickstart
         /// <returns>JSON string representing RSA parameters of the <paramref name="key"/></returns>
         public static string SerializeRsaParameters(string key)
         {
-            PemReader pemReader = new PemReader(new StringReader(key));
-            AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair) pemReader.ReadObject();
+            PemReader pemReader = new(new StringReader(key));
+            AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair)pemReader.ReadObject();
             RSAParameters parameters = DotNetUtilities.ToRSAParameters(keyPair.Private as RsaPrivateCrtKeyParameters);
-            return JsonConvert.SerializeObject((EncryptionKeyParameters) parameters);
+            return JsonConvert.SerializeObject((EncryptionKeyParameters)parameters);
         }
 
         /// <summary>
@@ -33,6 +33,6 @@ namespace Quickstart
         /// <param name="json">JSON-serialized RSA key parameters</param>
         /// <returns>Created RSA instance representing the encryption key</returns>
         public static RSA GetRsaKeyFromJson(string json) =>
-            RSA.Create((RSAParameters) JsonConvert.DeserializeObject<EncryptionKeyParameters>(json));
+            RSA.Create((RSAParameters)JsonConvert.DeserializeObject<EncryptionKeyParameters>(json));
     }
 }

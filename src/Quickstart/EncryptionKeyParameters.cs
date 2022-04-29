@@ -19,7 +19,7 @@ namespace Quickstart
         public byte[] D;
 
         public static explicit operator EncryptionKeyParameters(RSAParameters parameters) =>
-            new EncryptionKeyParameters
+            new()
             {
                 E = parameters.Exponent,
                 M = parameters.Modulus,
@@ -32,7 +32,7 @@ namespace Quickstart
             };
 
         public static explicit operator RSAParameters(EncryptionKeyParameters parameters) =>
-            new RSAParameters
+            new()
             {
                 Exponent = parameters.E,
                 Modulus = parameters.M,
