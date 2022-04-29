@@ -1,23 +1,22 @@
-﻿// ReSharper disable once CheckNamespace
+// ReSharper disable once CheckNamespace
 
-namespace Telegram.Bot
+namespace Telegram.Bot;
+
+public static partial class PassportEnums
 {
-    public static partial class PassportEnums
+    /// <summary>
+    /// Gender, male or female
+    /// </summary>
+    public static class Gender
     {
         /// <summary>
-        /// Gender, male or female
+        /// Male
         /// </summary>
-        public static class Gender
-        {
-            /// <summary>
-            /// Male
-            /// </summary>
-            public const string Male = "male";
+        public const string Male = "male";
 
-            /// <summary>
-            /// Female
-            /// </summary>
-            public const string Female = "female";
-        }
+        /// <summary>
+        /// Female
+        /// </summary>
+        public const string Female = "female";
     }
 }

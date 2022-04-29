@@ -1,46 +1,44 @@
-using System;
-using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Globalization;
 
 // ReSharper disable once CheckNamespace
-namespace Telegram.Bot.Types.Passport
+namespace Telegram.Bot.Types.Passport;
+
+/// <summary>
+/// This object represents the data of an identity document.
+/// </summary>
+[JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
+public class IdDocumentData : IDecryptedValue
 {
     /// <summary>
-    /// This object represents the data of an identity document.
+    /// Document number
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class IdDocumentData : IDecryptedValue
+    [JsonProperty(Required = Required.Always)]
+    public string DocumentNo { get; set; }
+
+    /// <summary>
+    /// Optional. Date of expiry, in DD.MM.YYYY format
+    /// </summary>
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string ExpiryDate { get; set; }
+
+    /// <summary>
+    /// Date of expiry if available
+    /// </summary>
+    public DateTime? Expiry
     {
-        /// <summary>
-        /// Document number
-        /// </summary>
-        [JsonProperty(Required = Required.Always)]
-        public string DocumentNo { get; set; }
-
-        /// <summary>
-        /// Optional. Date of expiry, in DD.MM.YYYY format
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string ExpiryDate { get; set; }
-
-        /// <summary>
-        /// Date of expiry if available
-        /// </summary>
-        public DateTime? Expiry
+        get
         {
-            get
+            if (
+                !string.IsNullOrWhiteSpace(ExpiryDate) &&
+                DateTime.TryParseExact(ExpiryDate, "dd.MM.yyyy", null, DateTimeStyles.None, out var result)
+            )
             {
-                if (
-                    !string.IsNullOrWhiteSpace(ExpiryDate) &&
-                    DateTime.TryParseExact(ExpiryDate, "dd.MM.yyyy", null, DateTimeStyles.None, out var result)
-                )
-                {
-                    return result;
-                }
-
-                return null;
+                return result;
             }
+
+            return null;
         }
     }
 }

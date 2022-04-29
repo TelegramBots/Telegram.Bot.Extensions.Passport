@@ -2,24 +2,23 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 // ReSharper disable once CheckNamespace
-namespace Telegram.Bot.Types.Passport
+namespace Telegram.Bot.Types.Passport;
+
+/// <summary>
+/// These credentials can be used to decrypt encrypted data from the data field in <see cref="PassportData"/>.
+/// </summary>
+[JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
+public class DataCredentials
 {
     /// <summary>
-    /// These credentials can be used to decrypt encrypted data from the data field in <see cref="PassportData"/>.
+    /// Checksum of encrypted data
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class DataCredentials
-    {
-        /// <summary>
-        /// Checksum of encrypted data
-        /// </summary>
-        [JsonProperty(Required = Required.Always)]
-        public string DataHash { get; set; }
+    [JsonProperty(Required = Required.Always)]
+    public string DataHash { get; set; }
 
-        /// <summary>
-        /// Secret of encrypted data
-        /// </summary>
-        [JsonProperty(Required = Required.Always)]
-        public string Secret { get; set; }
-    }
+    /// <summary>
+    /// Secret of encrypted data
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public string Secret { get; set; }
 }
