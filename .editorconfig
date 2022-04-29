@@ -20,6 +20,7 @@ csharp_align_multiline_extends_list = true
 csharp_align_linq_query = true
 csharp_place_attribute_on_same_line = false
 csharp_empty_block_style = together
+max_line_length = 120
 
 # Solution Files
 [*.sln]
