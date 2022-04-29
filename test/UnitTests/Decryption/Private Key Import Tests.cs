@@ -2,15 +2,15 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
 
-using System;
-using System.Reflection;
-using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
+using System;
+using System.Reflection;
+using System.Security.Cryptography;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -111,7 +111,7 @@ namespace UnitTests
             RSAParameters parameters;
             {
                 PemReader pemReader = new PemReader(new System.IO.StringReader(PrivateKeyPem));
-                AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair) pemReader.ReadObject();
+                AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair)pemReader.ReadObject();
                 parameters = DotNetUtilities.ToRSAParameters(keyPair.Private as RsaPrivateCrtKeyParameters);
             }
 
@@ -146,7 +146,7 @@ namespace UnitTests
             RSAParameters parameters;
             {
                 PemReader pemReader = new PemReader(new System.IO.StringReader(PrivateKeyPem));
-                AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair) pemReader.ReadObject();
+                AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair)pemReader.ReadObject();
                 parameters = DotNetUtilities.ToRSAParameters(keyPair.Private as RsaPrivateCrtKeyParameters);
             }
             string json = JsonConvert.SerializeObject(parameters);
@@ -583,7 +583,7 @@ namespace UnitTests
                 InverseQ = inverseQ,
             };
 
-            EncryptionKeyParameters keyParameters = (EncryptionKeyParameters) rsaParameters;
+            EncryptionKeyParameters keyParameters = (EncryptionKeyParameters)rsaParameters;
 
             Assert.Equal(exponent, keyParameters.E);
             Assert.Equal(mod, keyParameters.M);
@@ -687,7 +687,7 @@ namespace UnitTests
                 IQ = inverseQ,
             };
 
-            RSAParameters rsaParameters = (RSAParameters) keyParameters;
+            RSAParameters rsaParameters = (RSAParameters)keyParameters;
 
             Assert.Equal(exponent, rsaParameters.Exponent);
             Assert.Equal(mod, rsaParameters.Modulus);

@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Security.Cryptography;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace UnitTests
 {
@@ -42,7 +42,7 @@ namespace UnitTests
                     -----END RSA PRIVATE KEY-----
                 ";
                 PemReader pemReader = new PemReader(new StringReader(privateKeyPem));
-                AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair) pemReader.ReadObject();
+                AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair)pemReader.ReadObject();
                 RSAParameters parameters =
                     DotNetUtilities.ToRSAParameters(keyPair.Private as RsaPrivateCrtKeyParameters);
                 RSA rsa = RSA.Create(parameters);

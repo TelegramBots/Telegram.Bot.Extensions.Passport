@@ -123,10 +123,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
-                decrypter.DecryptFile(null, null)
+                decrypter.DecryptFile(null!, null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedContent$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -136,10 +135,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
-                decrypter.DecryptFile(new byte[0], null)
+                decrypter.DecryptFile(Array.Empty<byte>(), null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: fileCredentials$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -148,10 +146,9 @@ namespace UnitTests
         {
             IDecrypter decrypter = new Decrypter();
             Exception exception = Assert.ThrowsAny<Exception>(() =>
-                decrypter.DecryptFile(new byte[0], new FileCredentials())
+                decrypter.DecryptFile(Array.Empty<byte>(), new FileCredentials())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -160,12 +157,11 @@ namespace UnitTests
         {
             IDecrypter decrypter = new Decrypter();
 
-            FileCredentials fileCredentials = new FileCredentials {Secret = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "" };
             Exception exception = Assert.ThrowsAny<Exception>(() =>
                 decrypter.DecryptFile(new byte[0], fileCredentials)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: FileHash$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -173,13 +169,12 @@ namespace UnitTests
         public void Should_Throw_If_Empty_Data_Bytes_Length()
         {
             IDecrypter decrypter = new Decrypter();
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = "" };
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
                 decrypter.DecryptFile(new byte[0], fileCredentials)
             );
 
-            Assert.Matches(@"^Data array is empty\.\s+Parameter name: encryptedContent$", exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -187,7 +182,7 @@ namespace UnitTests
         public void Should_Throw_If_Invalid_Data_Bytes_Length()
         {
             IDecrypter decrypter = new Decrypter();
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = "" };
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
                 decrypter.DecryptFile(new byte[16 + 1], fileCredentials)
@@ -202,7 +197,7 @@ namespace UnitTests
         [InlineData("FooBarBazlg/H/pEaTJigo4mQJ0s8B+HGCWKTWtOTIdo=")]
         public void Should_Throw_If_Invalid_Secret(string secret)
         {
-            FileCredentials fileCredentials = new FileCredentials {Secret = secret, FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = secret, FileHash = "" };
             IDecrypter decrypter = new Decrypter();
 
             Assert.Throws<FormatException>(() =>
@@ -215,7 +210,7 @@ namespace UnitTests
         [InlineData("FooBarBazlg/H/pEaTJigo4mQJ0s8B+HGCWKTWtOTIdo=")]
         public void Should_Throw_If_Invalid_Hash(string fileHash)
         {
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = fileHash};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = fileHash };
             IDecrypter decrypter = new Decrypter();
 
             Assert.ThrowsAny<FormatException>(() =>
@@ -229,7 +224,7 @@ namespace UnitTests
         [InlineData("Zm9v")]
         public void Should_Throw_If_Invalid_Hash_Length(string fileHash)
         {
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = fileHash};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = fileHash };
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>

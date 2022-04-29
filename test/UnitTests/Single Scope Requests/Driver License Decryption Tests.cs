@@ -3,10 +3,10 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
 using Xunit;
@@ -69,7 +69,7 @@ namespace UnitTests
             Credentials credentials =
                 decrypter.DecryptCredentials(passportData.Credentials, EncryptionKey.RsaPrivateKey);
 
-            EncryptedPassportElement licenseEl = Assert.Single(passportData.Data, el => el.Type == "driver_license");
+            EncryptedPassportElement licenseEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.DriverLicence);
 
             IdDocumentData licenseDoc = decrypter.DecryptData<IdDocumentData>(
                 encryptedData: licenseEl.Data,
@@ -77,9 +77,9 @@ namespace UnitTests
             );
 
             Assert.Equal("G544-061", licenseDoc.DocumentNo);
-            Assert.Equal("26.11.2022", licenseDoc.ExpiryDate);
-            Assert.NotNull(licenseDoc.Expiry);
-            Assert.InRange(licenseDoc.Expiry.Value, new DateTime(2022, 11, 26), new DateTime(2022, 11, 26, 0, 0, 1));
+            //Assert.Equal("26.11.2022", licenseDoc.ExpiryDate);
+            Assert.NotNull(licenseDoc.ExpiryDate);
+            Assert.InRange(licenseDoc.ExpiryDate!.Value, new DateTime(2022, 11, 26), new DateTime(2022, 11, 26, 0, 0, 1));
         }
 
         [Fact(DisplayName = "Should decrypt front side photo file of 'driver_license' element")]
@@ -207,23 +207,27 @@ namespace UnitTests
 {
   ""data"": [
     {
-      ""type"": ""driver_license"",
+      ""type"": ""driver_licence"",
       ""data"": ""+ThtmwC1Cq5JPUg8h3E3aSia0qFhuDCGBQap3FzC7MpPp32DtElU1WucEwEHi2zLmCQbSABZ4JbHREYGJhjfJJthRhrdmyvFQDWeU6kQjD2FG2QzPCWB1hNorAXX/X9pLRZiHUrmbqMcU2Mch/X/jVEQcTAXYwkTUdit3ZU+aGzz79tXos4ZCHfnBf5bKww/1n54TPLsVwOa4TAywcaahsJdCDZn2gxCNig2/dY7nfU="",
       ""front_side"": {
         ""file_id"": ""DgADAQADQwAD8dA5RLvzieFGLU4nAg"",
+        ""file_unique_id"": ""DgADAQADQwAD8dA5RLvzieFGLU4nAg"",
         ""file_date"": 1535597542
       },
       ""reverse_side"": {
         ""file_id"": ""DgADAQADHAADkeFARJRE1buibKe-Ag"",
+        ""file_unique_id"": ""DgADAQADQwAD8dA5RLvzieFGLU4nAg"",
         ""file_date"": 1535597542
       },
       ""selfie"": {
         ""file_id"": ""DgADAQADLgADdYs5RME9OcP0l7GQAg"",
+        ""file_unique_id"": ""DgADAQADQwAD8dA5RLvzieFGLU4nAg"",
         ""file_date"": 1535597542
       },
       ""translation"": [
         {
           ""file_id"": ""DgADAQADMQADnHM4RKOZghHOVNRHAg"",
+          ""file_unique_id"": ""DgADAQADQwAD8dA5RLvzieFGLU4nAg"",
           ""file_date"": 1535597788
         }
       ],
