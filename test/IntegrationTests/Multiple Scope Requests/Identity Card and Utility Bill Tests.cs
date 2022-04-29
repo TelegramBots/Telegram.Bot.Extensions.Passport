@@ -1,16 +1,12 @@
-// ReSharper disable PossibleNullReferenceException
-// ReSharper disable CheckNamespace
-// ReSharper disable StringLiteralTypo
-
+using IntegrationTests.Framework;
+using IntegrationTests.Framework.Fixtures;
 using System;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using IntegrationTests.Framework;
-using IntegrationTests.Framework.Fixtures;
 using Telegram.Bot;
 using Telegram.Bot.Passport;
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
@@ -88,7 +84,7 @@ namespace IntegrationTests
                 "2. Open link in browser to redirect you back to Telegram passport\n" +
                 "3. Authorize bot to access the info",
                 ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Share via Passport",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
@@ -106,9 +102,9 @@ namespace IntegrationTests
 
             #region identity card element validation
 
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
             Assert.NotNull(idCardEl);
-            Assert.Equal(PassportEnums.Scope.IdentityCard, idCardEl.Type);
+            Assert.Equal(EncryptedPassportElementType.IdentityCard, idCardEl.Type);
 
             Assert.NotEmpty(idCardEl.Data);
             Assert.NotEmpty(idCardEl.Hash);
@@ -129,9 +125,9 @@ namespace IntegrationTests
 
             #region utility bill element validation
 
-            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == "utility_bill");
+            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.UtilityBill);
             Assert.NotNull(billElement);
-            Assert.Equal(PassportEnums.Scope.UtilityBill, billElement.Type);
+            Assert.Equal(EncryptedPassportElementType.UtilityBill, billElement.Type);
 
             Assert.NotEmpty(billElement.Hash);
             Assert.Null(billElement.Data);
@@ -221,7 +217,7 @@ namespace IntegrationTests
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             IdDocumentData documentData = decrypter.DecryptData<IdDocumentData>(
                 idCardEl.Data,
@@ -229,13 +225,13 @@ namespace IntegrationTests
             );
 
             Assert.NotEmpty(documentData.DocumentNo);
-            if (string.IsNullOrEmpty(documentData.ExpiryDate))
+            if (documentData.ExpiryDate is null)
             {
-                Assert.Null(documentData.Expiry);
+                Assert.Null(documentData.ExpiryDate);
             }
             else
             {
-                Assert.NotNull(documentData.Expiry);
+                Assert.NotNull(documentData.ExpiryDate);
             }
         }
 
@@ -245,13 +241,13 @@ namespace IntegrationTests
             Update update = _classFixture.Entity;
             PassportData passportData = update.Message.PassportData;
             RSA key = EncryptionKey.ReadAsRsa();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
 
             byte[] encryptedContent;
-            using (System.IO.MemoryStream stream = new System.IO.MemoryStream(idCardEl.FrontSide.FileSize))
+            using (System.IO.MemoryStream stream = new System.IO.MemoryStream(idCardEl.FrontSide.FileSize ?? 0))
             {
                 await BotClient.GetInfoAndDownloadFileAsync(
                     idCardEl.FrontSide.FileId,
@@ -275,7 +271,7 @@ namespace IntegrationTests
             Update update = _classFixture.Entity;
             PassportData passportData = update.Message.PassportData;
             RSA key = EncryptionKey.ReadAsRsa();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
@@ -298,7 +294,7 @@ namespace IntegrationTests
                     reverseSideFile
                 );
 
-                Assert.InRange(reverseSideFile.Length, encFileInfo.FileSize - 256, encFileInfo.FileSize + 256);
+                Assert.InRange(reverseSideFile.Length, encFileInfo.FileSize ?? 0 - 256, encFileInfo.FileSize ?? 0 + 256);
             }
 
             _output.WriteLine("Reverse side photo is written to file \"{0}\".", destFilePath);
@@ -310,13 +306,13 @@ namespace IntegrationTests
             Update update = _classFixture.Entity;
             PassportData passportData = update.Message.PassportData;
             RSA key = EncryptionKey.ReadAsRsa();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
 
             byte[] encryptedContent;
-            using (System.IO.MemoryStream stream = new System.IO.MemoryStream(idCardEl.Selfie.FileSize))
+            using (System.IO.MemoryStream stream = new System.IO.MemoryStream(idCardEl.Selfie.FileSize ?? 0))
             {
                 await BotClient.GetInfoAndDownloadFileAsync(
                     idCardEl.Selfie.FileId,
@@ -339,7 +335,7 @@ namespace IntegrationTests
             Update update = _classFixture.Entity;
             PassportData passportData = update.Message.PassportData;
             RSA key = EncryptionKey.ReadAsRsa();
-            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == "utility_bill");
+            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.UtilityBill);
 
             PassportFile billScanFile = Assert.Single(billElement.Files);
 
@@ -356,12 +352,12 @@ namespace IntegrationTests
                     fileCredentials,
                     decryptedFile
                 );
-                Assert.InRange(decryptedFile.Length, billScanFile.FileSize - 256, billScanFile.FileSize + 256);
+                Assert.InRange(decryptedFile.Length, billScanFile.FileSize ?? 0 - 256, billScanFile.FileSize ?? 0 + 256);
             }
 
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize ?? 0, 1_000, 50_000_000);
         }
 
         [OrderedFact("Should decrypt the single translation file in 'utility_bill' element")]
@@ -370,7 +366,7 @@ namespace IntegrationTests
             Update update = _classFixture.Entity;
             PassportData passportData = update.Message.PassportData;
             RSA key = EncryptionKey.ReadAsRsa();
-            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == "utility_bill");
+            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.UtilityBill);
 
             PassportFile translationFile = Assert.Single(billElement.Translation);
 
@@ -387,12 +383,12 @@ namespace IntegrationTests
                     fileCredentials,
                     decryptedFile
                 );
-                Assert.InRange(decryptedFile.Length, translationFile.FileSize - 256, translationFile.FileSize + 256);
+                Assert.InRange(decryptedFile.Length, translationFile.FileSize ?? 0 - 256, translationFile.FileSize ?? 0 + 256);
             }
 
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize ?? 0, 1_000, 50_000_000);
         }
     }
 }

@@ -2,13 +2,14 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
+using IntegrationTests.Framework;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using IntegrationTests.Framework;
 using Telegram.Bot;
 using Telegram.Bot.Passport;
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Requests;
+using Telegram.Bot.Requests.PassportErrors;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
@@ -66,7 +67,7 @@ namespace IntegrationTests
                 "2. Open link in browser to redirect you back to Telegram passport\n" +
                 "3. Authorize bot to access the info",
                 ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Share via Passport",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
@@ -121,7 +122,7 @@ namespace IntegrationTests
                 _fixture.SupergroupChat,
                 "Errors are set on all the files for passport registration document.\n" +
                 "You can see error message with opening the request link again.",
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Passport Authorization Request",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )

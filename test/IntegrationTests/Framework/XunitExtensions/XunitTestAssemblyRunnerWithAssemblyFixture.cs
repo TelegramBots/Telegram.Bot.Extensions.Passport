@@ -28,7 +28,7 @@ namespace IntegrationTests.Framework.XunitExtensions
             // Go find all the AssemblyFixtureAttributes adorned on the test assembly
             Aggregator.Run(() =>
             {
-                var fixturesAttrs = ((IReflectionAssemblyInfo) TestAssembly.Assembly).Assembly
+                var fixturesAttrs = ((IReflectionAssemblyInfo)TestAssembly.Assembly).Assembly
                     .GetCustomAttributes(typeof(AssemblyFixtureAttribute))
                     .Cast<AssemblyFixtureAttribute>()
                     .ToList();
@@ -76,7 +76,7 @@ namespace IntegrationTests.Framework.XunitExtensions
                 .RunAsync()
                 .ContinueWith(t =>
                 {
-                    var fixture = (TestsFixture) _assemblyFixtureMappings.Single().Value;
+                    var fixture = (TestsFixture)_assemblyFixtureMappings.Single().Value;
                     fixture.RunSummary.Aggregate(t.Result);
                     return t.Result;
                 });

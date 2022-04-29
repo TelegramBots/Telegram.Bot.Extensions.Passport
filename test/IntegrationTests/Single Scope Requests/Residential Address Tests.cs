@@ -2,13 +2,13 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
-using System.Linq;
-using System.Threading.Tasks;
 using IntegrationTests.Framework;
 using IntegrationTests.Framework.Fixtures;
+using System.Linq;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Passport;
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
@@ -64,7 +64,7 @@ namespace IntegrationTests
                 "2. Open link in browser to redirect you back to Telegram passport\n" +
                 "3. Authorize bot to access the info",
                 ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Share via Passport",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
@@ -84,8 +84,7 @@ namespace IntegrationTests
 
             EncryptedPassportElement encryptedElement = Assert.Single(passportData.Data);
             Assert.NotNull(encryptedElement);
-            Assert.Equal("address", encryptedElement.Type);
-            Assert.Equal(PassportEnums.Scope.Address, encryptedElement.Type);
+            Assert.Equal(EncryptedPassportElementType.Address, encryptedElement.Type);
             Assert.NotEmpty(encryptedElement.Data);
             Assert.NotEmpty(encryptedElement.Hash);
 
