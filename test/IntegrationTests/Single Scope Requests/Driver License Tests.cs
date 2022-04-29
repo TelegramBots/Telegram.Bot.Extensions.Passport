@@ -2,14 +2,14 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
+using IntegrationTests.Framework;
+using IntegrationTests.Framework.Fixtures;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using IntegrationTests.Framework;
-using IntegrationTests.Framework.Fixtures;
 using Telegram.Bot;
 using Telegram.Bot.Passport;
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
@@ -73,7 +73,7 @@ namespace IntegrationTests
                 "2. Open link in browser to so it redirects you to Telegram Passport\n" +
                 "3. Authorize bot to access the info",
                 ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Share via Passport",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
@@ -91,23 +91,22 @@ namespace IntegrationTests
 
             EncryptedPassportElement encryptedElement = Assert.Single(passportData.Data);
             Assert.NotNull(encryptedElement);
-            Assert.Equal("driver_license", encryptedElement.Type);
-            Assert.Equal(PassportEnums.Scope.DriverLicense, encryptedElement.Type);
+            Assert.Equal(EncryptedPassportElementType.DriverLicence, encryptedElement.Type);
 
             Assert.NotEmpty(encryptedElement.Data);
             Assert.NotEmpty(encryptedElement.Hash);
 
             Assert.NotNull(encryptedElement.FrontSide);
             Assert.NotEmpty(encryptedElement.FrontSide.FileId);
-            Assert.InRange(encryptedElement.FrontSide.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedElement.FrontSide.FileSize ?? 0, 1_000, 50_000_000);
 
             Assert.NotNull(encryptedElement.ReverseSide);
             Assert.NotEmpty(encryptedElement.ReverseSide.FileId);
-            Assert.InRange(encryptedElement.ReverseSide.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedElement.ReverseSide.FileSize ?? 0, 1_000, 50_000_000);
 
             Assert.NotNull(encryptedElement.Selfie);
             Assert.NotEmpty(encryptedElement.Selfie.FileId);
-            Assert.InRange(encryptedElement.Selfie.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedElement.Selfie.FileSize ?? 0, 1_000, 50_000_000);
 
             Assert.NotNull(encryptedElement.Translation);
             Assert.NotEmpty(encryptedElement.Translation);
@@ -118,7 +117,7 @@ namespace IntegrationTests
             );
             Assert.All(
                 encryptedElement.Translation,
-                translation => Assert.InRange(translation.FileSize, 1_000, 50_000_000)
+                translation => Assert.InRange(translation.FileSize ?? 0, 1_000, 50_000_000)
             );
 
             Assert.NotNull(passportData.Credentials);
@@ -183,13 +182,13 @@ namespace IntegrationTests
             );
 
             Assert.NotEmpty(licenseDoc.DocumentNo);
-            if (string.IsNullOrEmpty(licenseDoc.ExpiryDate))
+            if (licenseDoc.ExpiryDate is null)
             {
-                Assert.Null(licenseDoc.Expiry);
+                Assert.Null(licenseDoc.ExpiryDate);
             }
             else
             {
-                Assert.NotNull(licenseDoc.Expiry);
+                Assert.NotNull(licenseDoc.ExpiryDate);
             }
         }
 
@@ -218,7 +217,7 @@ namespace IntegrationTests
 
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize ?? 0, 1_000, 50_000_000);
         }
 
         [OrderedFact("Should decrypt reverse side photo file of 'driver_license' element")]
@@ -234,7 +233,7 @@ namespace IntegrationTests
             File encryptedFileInfo;
             string decryptedFilePath = System.IO.Path.GetTempFileName();
             using (System.IO.Stream
-                encryptedContent = new System.IO.MemoryStream(element.ReverseSide.FileSize),
+                encryptedContent = new System.IO.MemoryStream(element.ReverseSide.FileSize ?? 0),
                 decryptedFile = System.IO.File.OpenWrite(decryptedFilePath)
             )
             {
@@ -255,7 +254,7 @@ namespace IntegrationTests
 
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize ?? 0, 1_000, 50_000_000);
         }
 
         [OrderedFact("Should decrypt selfie photo file of 'driver_license' element and send it to chat")]
@@ -274,9 +273,9 @@ namespace IntegrationTests
 
                 Assert.NotEmpty(encryptedFileInfo.FilePath);
                 Assert.NotEmpty(encryptedFileInfo.FileId);
-                Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+                Assert.InRange(encryptedFileInfo.FileSize ?? 0, 1_000, 50_000_000);
 
-                using (System.IO.MemoryStream stream = new System.IO.MemoryStream(encryptedFileInfo.FileSize))
+                using (System.IO.MemoryStream stream = new System.IO.MemoryStream(encryptedFileInfo.FileSize ?? 0))
                 {
                     await BotClient.DownloadFileAsync(encryptedFileInfo.FilePath, stream);
                     encryptedContent = stream.ToArray();
@@ -323,9 +322,9 @@ namespace IntegrationTests
 
                     Assert.NotEmpty(encryptedFileInfo.FilePath);
                     Assert.NotEmpty(encryptedFileInfo.FileId);
-                    Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+                    Assert.InRange(encryptedFileInfo.FileSize ?? 0, 1_000, 50_000_000);
 
-                    using (System.IO.MemoryStream stream = new System.IO.MemoryStream(encryptedFileInfo.FileSize))
+                    using (System.IO.MemoryStream stream = new System.IO.MemoryStream(encryptedFileInfo.FileSize ?? 0))
                     {
                         await BotClient.DownloadFileAsync(encryptedFileInfo.FilePath, stream);
                         encryptedContent = stream.ToArray();

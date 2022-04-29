@@ -2,10 +2,10 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
+using Newtonsoft.Json;
 using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
 using Xunit;
@@ -37,18 +37,18 @@ namespace UnitTests
 
             // decryption of document data in 'identity_card' element requires accompanying DataCredentials
             Assert.NotNull(credentials.SecureData.IdentityCard);
-            Assert.NotNull(credentials.SecureData.IdentityCard.Data);
-            Assert.NotEmpty(credentials.SecureData.IdentityCard.Data.Secret);
+            Assert.NotNull(credentials.SecureData.IdentityCard!.Data);
+            Assert.NotEmpty(credentials.SecureData.IdentityCard.Data!.Secret);
             Assert.NotEmpty(credentials.SecureData.IdentityCard.Data.DataHash);
 
             // decryption of front side of 'identity_card' element requires accompanying FileCredentials
             Assert.NotNull(credentials.SecureData.IdentityCard.FrontSide);
-            Assert.NotEmpty(credentials.SecureData.IdentityCard.FrontSide.Secret);
+            Assert.NotEmpty(credentials.SecureData.IdentityCard.FrontSide!.Secret);
             Assert.NotEmpty(credentials.SecureData.IdentityCard.FrontSide.FileHash);
 
             // decryption of reverse side of 'identity_card' element requires accompanying FileCredentials
             Assert.NotNull(credentials.SecureData.IdentityCard.ReverseSide);
-            Assert.NotEmpty(credentials.SecureData.IdentityCard.ReverseSide.Secret);
+            Assert.NotEmpty(credentials.SecureData.IdentityCard.ReverseSide!.Secret);
             Assert.NotEmpty(credentials.SecureData.IdentityCard.ReverseSide.FileHash);
 
             // decryption of selfie of 'identity_card' element requires accompanying FileCredentials
@@ -60,7 +60,7 @@ namespace UnitTests
             Assert.Null(credentials.SecureData.IdentityCard.Files);
 
             // decryption of file scan in 'utility_bill' element requires accompanying FileCredentials
-            Assert.NotNull(credentials.SecureData.UtilityBill.Files);
+            Assert.NotNull(credentials.SecureData.UtilityBill!.Files);
             FileCredentials billFileCredentials = Assert.Single(credentials.SecureData.UtilityBill.Files);
             Assert.NotEmpty(billFileCredentials.Secret);
             Assert.NotEmpty(billFileCredentials.FileHash);
@@ -73,7 +73,7 @@ namespace UnitTests
             Assert.NotEmpty(billTranslationFileCredentials.FileHash);
         }
 
-        [Fact(DisplayName = "Should decrypt docuemnt data in 'identity_card' element")]
+        [Fact(DisplayName = "Should decrypt document data in 'identity_card' element")]
         public void Should_Decrypt_Element_Document()
         {
             PassportData passportData = GetPassportData();
@@ -82,7 +82,7 @@ namespace UnitTests
             Credentials credentials =
                 decrypter.DecryptCredentials(passportData.Credentials, EncryptionKey.RsaPrivateKey);
 
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             IdDocumentData documentData = decrypter.DecryptData<IdDocumentData>(
                 idCardEl.Data,
@@ -90,20 +90,20 @@ namespace UnitTests
             );
 
             Assert.Equal("9999R", documentData.DocumentNo);
-            Assert.Empty(documentData.ExpiryDate);
-            Assert.Null(documentData.Expiry);
+            //Assert.Empty(documentData.ExpiryDate);
+            Assert.Null(documentData.ExpiryDate);
         }
 
         [Fact(DisplayName = "Should decrypt front side photo in 'identity_card' element")]
         public async Task Should_Decrypt_Identity_Card_Element_Front_Side()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             Assert.NotNull(idCardEl.FrontSide);
             Assert.Equal("DgADAQADGwADQnBBRBexahgtkoPgAg", idCardEl.FrontSide.FileId);
             Assert.InRange(idCardEl.FrontSide.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, idCardEl.FrontSide.FileSize);
+            Assert.Null(idCardEl.FrontSide.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -138,12 +138,12 @@ namespace UnitTests
         public async Task Should_Decrypt_Identity_Card_Element_Reverse_Side()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             Assert.NotNull(idCardEl.ReverseSide);
             Assert.Equal("DgADAQADKAADNfRARK9jbzh5AAFqvAI", idCardEl.ReverseSide.FileId);
             Assert.InRange(idCardEl.ReverseSide.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, idCardEl.ReverseSide.FileSize);
+            Assert.Null(idCardEl.ReverseSide.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -179,12 +179,12 @@ namespace UnitTests
         public async Task Should_decrypt_identity_card_element_selfie()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             Assert.NotNull(idCardEl.Selfie);
             Assert.Equal("DgADAQADNAADA1BJRCUHz9fqxiqJAg", idCardEl.Selfie.FileId);
             Assert.InRange(idCardEl.Selfie.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, idCardEl.Selfie.FileSize);
+            Assert.Null(idCardEl.Selfie.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -219,14 +219,14 @@ namespace UnitTests
         public async Task Should_Decrypt_Utility_Bill_Element_File()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == "utility_bill");
+            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.UtilityBill);
 
             Assert.NotNull(billElement.Files);
             PassportFile scanFile = Assert.Single(billElement.Files);
 
             Assert.Equal("DgADAQADQAADPupBRDIrCqSwkb4iAg", scanFile.FileId);
             Assert.InRange(scanFile.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, scanFile.FileSize);
+            Assert.Null(scanFile.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -263,14 +263,14 @@ namespace UnitTests
         public async Task Should_Decrypt_Utility_Bill_Element_Translation()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == "utility_bill");
+            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.UtilityBill);
 
             Assert.NotNull(billElement.Translation);
             PassportFile translationFile = Assert.Single(billElement.Translation);
 
             Assert.Equal("DgADAQADOwADGV9BRP4b7RLGAtUKAg", translationFile.FileId);
             Assert.InRange(translationFile.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, translationFile.FileSize);
+            Assert.Null(translationFile.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -312,14 +312,17 @@ namespace UnitTests
       ""data"": ""Xi+gxIkl9rgOvnK6NNT1kg8mf8DaXusx0gkENI/QrUTdQ7qfdT/FhOI8nq/xUiGVuX3QlBWT2kVk0CJ0NFhckQ+tbicHuErxq9+80hjBsaoRp2j6CDxU6gl1B3ZfJ9nVnk/HNMiXGfnz8GVk7XAp2A=="",
       ""front_side"": {
         ""file_id"": ""DgADAQADGwADQnBBRBexahgtkoPgAg"",
+        ""file_unique_id"": ""DgADAQADGwADQnBBRBexahgtkoPgAg"",
         ""file_date"": 1535639975
       },
       ""reverse_side"": {
         ""file_id"": ""DgADAQADKAADNfRARK9jbzh5AAFqvAI"",
+        ""file_unique_id"": ""DgADAQADGwADQnBBRBexahgtkoPgAg"",
         ""file_date"": 1535639975
       },
       ""selfie"": {
         ""file_id"": ""DgADAQADNAADA1BJRCUHz9fqxiqJAg"",
+        ""file_unique_id"": ""DgADAQADGwADQnBBRBexahgtkoPgAg"",
         ""file_date"": 1535639975
       },
       ""hash"": ""XAIrZ+liSIWhyaYerm4yj14ZJhw93S/IVeeoSUSavI8=""
@@ -329,12 +332,14 @@ namespace UnitTests
       ""files"": [
         {
           ""file_id"": ""DgADAQADQAADPupBRDIrCqSwkb4iAg"",
+          ""file_unique_id"": ""DgADAQADGwADQnBBRBexahgtkoPgAg"",
           ""file_date"": 1535639861
         }
       ],
       ""translation"": [
         {
           ""file_id"": ""DgADAQADOwADGV9BRP4b7RLGAtUKAg"",
+          ""file_unique_id"": ""DgADAQADGwADQnBBRBexahgtkoPgAg"",
           ""file_date"": 1535639861
         }
       ],
@@ -346,7 +351,6 @@ namespace UnitTests
     ""hash"": ""TMUO1tE81hIOCgaqN7buhqG8SIZHjFfJrD93LNKL4Yg="",
     ""secret"": ""QcOxuwd9OiB/9akjMzyY7wR4NcrpbhpjQuO9yOWhe0u34VVLraTr3gwkBNv0eKEZHoyulhhLr9tkSSO+BYZAp4engued3eL11jqQkosJQBCPg8m1arIvNM+/E5Kw8dnF7dEx9v8t9QA11kSfAqdgnqCtSAq6GGGu5ixuYM1VMbk270qcm3F7wrLN+9YQwUVkiai8WvdA7Q7BnywsbrekKOam95tiFeA7jE8Cf78D6gh47/uirO/KD3Hwl1PNo1f8ORgFf8EixSQuV5Gh8HxEY1uE+yfOxksG5MiWOC5A1lNQuVcZqzVfbReRvs2M2tvX5KeeN+/xsIps+Xp+szWSaw==""
   }
-}
-        ");
+}");
     }
 }

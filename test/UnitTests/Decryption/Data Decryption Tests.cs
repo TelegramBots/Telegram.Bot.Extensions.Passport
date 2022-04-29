@@ -1,8 +1,8 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
-using System;
 using Newtonsoft.Json;
+using System;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
@@ -48,10 +48,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
-                decrypter.DecryptData<IDecryptedValue>(null, null)
+                decrypter.DecryptData<IDecryptedValue>(null!, null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedData$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -61,10 +60,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
-                decrypter.DecryptData<IDecryptedValue>("", null)
+                decrypter.DecryptData<IDecryptedValue>("", null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: dataCredentials$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -76,7 +74,6 @@ namespace UnitTests
                 decrypter.DecryptData<IDecryptedValue>("", new DataCredentials())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -85,12 +82,11 @@ namespace UnitTests
         {
             IDecrypter decrypter = new Decrypter();
 
-            DataCredentials dataCredentials = new DataCredentials {Secret = ""};
+            DataCredentials dataCredentials = new DataCredentials { Secret = "" };
             Exception exception = Assert.ThrowsAny<Exception>(() =>
                 decrypter.DecryptData<IDecryptedValue>("", dataCredentials)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: DataHash$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -98,13 +94,12 @@ namespace UnitTests
         public void Should_Throw_If_Empty_Data_String_Length()
         {
             IDecrypter decrypter = new Decrypter();
-            DataCredentials dataCredentials = new DataCredentials {Secret = "", DataHash = ""};
+            DataCredentials dataCredentials = new DataCredentials { Secret = "", DataHash = "" };
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
                 decrypter.DecryptData<IDecryptedValue>("", dataCredentials)
             );
 
-            Assert.Matches(@"^Data is empty\.\s+Parameter name: encryptedData$", exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -112,7 +107,7 @@ namespace UnitTests
         public void Should_Throw_If_Invalid_Data_String_Length()
         {
             IDecrypter decrypter = new Decrypter();
-            DataCredentials dataCredentials = new DataCredentials {Secret = "", DataHash = ""};
+            DataCredentials dataCredentials = new DataCredentials { Secret = "", DataHash = "" };
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
                 decrypter.DecryptData<IDecryptedValue>("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", dataCredentials)
@@ -127,7 +122,7 @@ namespace UnitTests
         [InlineData("FooBarBazlg/H/pEaTJigo4mQJ0s8B+HGCWKTWtOTIdo=")]
         public void Should_Throw_If_Invalid_Secret(string secret)
         {
-            DataCredentials dataCredentials = new DataCredentials {Secret = secret, DataHash = ""};
+            DataCredentials dataCredentials = new DataCredentials { Secret = secret, DataHash = "" };
             IDecrypter decrypter = new Decrypter();
 
             Assert.Throws<FormatException>(() =>
@@ -140,7 +135,7 @@ namespace UnitTests
         [InlineData("FooBarBazlg/H/pEaTJigo4mQJ0s8B+HGCWKTWtOTIdo=")]
         public void Should_Throw_If_Invalid_Data_Hash(string dataHash)
         {
-            DataCredentials dataCredentials = new DataCredentials {Secret = "", DataHash = dataHash};
+            DataCredentials dataCredentials = new DataCredentials { Secret = "", DataHash = dataHash };
             IDecrypter decrypter = new Decrypter();
 
             Assert.ThrowsAny<FormatException>(() =>
@@ -154,7 +149,7 @@ namespace UnitTests
         [InlineData("Zm9v")]
         public void Should_Throw_If_Invalid_Data_Hash_Length(string dataHash)
         {
-            DataCredentials dataCredentials = new DataCredentials {Secret = "", DataHash = dataHash};
+            DataCredentials dataCredentials = new DataCredentials { Secret = "", DataHash = dataHash };
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>

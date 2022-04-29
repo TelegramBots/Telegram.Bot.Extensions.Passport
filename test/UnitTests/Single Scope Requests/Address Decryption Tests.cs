@@ -33,8 +33,8 @@ namespace UnitTests
 
             // 'address' element decryption needs accompanying DataCredentials
             Assert.NotNull(credentials.SecureData.Address);
-            Assert.NotNull(credentials.SecureData.Address.Data);
-            Assert.NotEmpty(credentials.SecureData.Address.Data.Secret);
+            Assert.NotNull(credentials.SecureData.Address!.Data);
+            Assert.NotEmpty(credentials.SecureData.Address.Data!.Secret);
             Assert.NotEmpty(credentials.SecureData.Address.Data.DataHash);
         }
 
@@ -47,7 +47,7 @@ namespace UnitTests
             Credentials credentials =
                 decrypter.DecryptCredentials(passportData.Credentials, EncryptionKey.RsaPrivateKey);
 
-            EncryptedPassportElement addressEl = Assert.Single(passportData.Data, el => el.Type == "address");
+            EncryptedPassportElement addressEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.Address);
 
             ResidentialAddress residentialAddress = decrypter.DecryptData<ResidentialAddress>(
                 encryptedData: addressEl.Data,

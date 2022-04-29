@@ -1,9 +1,5 @@
-using System;
-using System.IO;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Security.Cryptography;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.Passport;
 

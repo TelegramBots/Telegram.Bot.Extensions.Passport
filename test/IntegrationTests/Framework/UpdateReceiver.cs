@@ -87,13 +87,13 @@ namespace IntegrationTests.Framework
 
         public async Task<Update> GetCallbackQueryUpdateAsync(
             int messageId = default,
-            string data = default,
+            string? data = default,
             bool discardNewUpdates = true,
             CancellationToken cancellationToken = default)
         {
             bool IsMatch(Update u) =>
-                (messageId == default || u.CallbackQuery.Message.MessageId == messageId) &&
-                (data == default || u.CallbackQuery.Data == data);
+                (messageId == default || u.CallbackQuery?.Message?.MessageId == messageId) &&
+                (data == default || u.CallbackQuery?.Data == data);
 
             var updates = await GetUpdatesAsync(IsMatch,
                 cancellationToken: cancellationToken,
@@ -141,7 +141,7 @@ namespace IntegrationTests.Framework
                 var updates = await GetUpdatesAsync(
                     u => u.Message?.Type == messageType || u.ChosenInlineResult != null,
                     cancellationToken: cancellationToken,
-                    updateTypes: new[] {UpdateType.Message, UpdateType.ChosenInlineResult}
+                    updateTypes: new[] { UpdateType.Message, UpdateType.ChosenInlineResult }
                 );
 
                 messageUpdate = updates.SingleOrDefault(u => u.Message?.Type == messageType);

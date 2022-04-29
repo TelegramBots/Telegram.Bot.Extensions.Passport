@@ -2,15 +2,15 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
+using IntegrationTests.Framework;
+using IntegrationTests.Framework.Fixtures;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using IntegrationTests.Framework;
-using IntegrationTests.Framework.Fixtures;
 using Telegram.Bot;
 using Telegram.Bot.Passport;
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
@@ -71,7 +71,7 @@ namespace IntegrationTests
                 "2. Open link in browser to redirect you back to Telegram passport\n" +
                 "3. Authorize bot to access the info",
                 ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Share via Passport",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
@@ -88,8 +88,7 @@ namespace IntegrationTests
             PassportData passportData = update.Message.PassportData;
 
             EncryptedPassportElement encryptedElement = Assert.Single(passportData.Data);
-            Assert.Equal("personal_details", encryptedElement.Type);
-            Assert.Equal(PassportEnums.Scope.PersonalDetails, encryptedElement.Type);
+            Assert.Equal(EncryptedPassportElementType.PersonalDetails, encryptedElement.Type);
             Assert.NotEmpty(encryptedElement.Data);
             Assert.NotEmpty(encryptedElement.Hash);
 
@@ -138,8 +137,8 @@ namespace IntegrationTests
             Assert.Equal(2, personalDetails.CountryCode.Length);
             Assert.NotEmpty(personalDetails.ResidenceCountryCode);
             Assert.Equal(2, personalDetails.ResidenceCountryCode.Length);
-            Assert.NotEmpty(personalDetails.BirthDate);
-            Assert.InRange(personalDetails.Birthdate, new DateTime(1900, 1, 1), DateTime.Today);
+            //Assert.NotEmpty(personalDetails.BirthDate);
+            Assert.InRange(personalDetails.BirthDate, new DateTime(1900, 1, 1), DateTime.Today);
         }
     }
 }

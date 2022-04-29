@@ -2,13 +2,13 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 using IntegrationTests.Framework;
 using IntegrationTests.Framework.Fixtures;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Passport;
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
@@ -64,7 +64,7 @@ namespace IntegrationTests
                 "2. Open link in browser to redirect you back to Telegram passport\n" +
                 "3. Authorize bot to access the info",
                 ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Share via Passport",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
@@ -80,16 +80,16 @@ namespace IntegrationTests
             Update update = _classFixture.Entity;
             PassportData passportData = update.Message.PassportData;
 
-            EncryptedPassportElement phoneElement = Assert.Single(passportData.Data, el => el.Type == "phone_number");
+            EncryptedPassportElement phoneElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.PhoneNumber);
             Assert.NotNull(phoneElement);
-            Assert.Equal(PassportEnums.Scope.PhoneNumber, phoneElement.Type);
+            Assert.Equal(EncryptedPassportElementType.PhoneNumber, phoneElement.Type);
             Assert.NotEmpty(phoneElement.PhoneNumber);
             Assert.True(long.TryParse(phoneElement.PhoneNumber, out _));
             Assert.NotEmpty(phoneElement.Hash);
 
-            EncryptedPassportElement emailElement = Assert.Single(passportData.Data, el => el.Type == "email");
+            EncryptedPassportElement emailElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.Email);
             Assert.NotNull(emailElement);
-            Assert.Equal(PassportEnums.Scope.Email, emailElement.Type);
+            Assert.Equal(EncryptedPassportElementType.Email, emailElement.Type);
             Assert.NotEmpty(emailElement.Email);
             Assert.NotEmpty(emailElement.Hash);
 

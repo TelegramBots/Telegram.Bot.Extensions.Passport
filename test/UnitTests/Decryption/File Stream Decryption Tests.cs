@@ -113,8 +113,8 @@ namespace UnitTests
                 );
             }
 
-            Assert.Equal("The input data is not a complete block.", exception.Message);
             Assert.IsType<CryptographicException>(exception);
+            Assert.Equal("The input data is not a complete block.", exception.Message);
         }
 
         [Fact(DisplayName = "Should throw when decrypting from a stream that is not positioned at the beginning")]
@@ -187,10 +187,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
-                decrypter.DecryptFileAsync(null, null, null)
+                decrypter.DecryptFileAsync(null!, null!, null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedContent$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -200,10 +199,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
-                decrypter.DecryptFileAsync(new MemoryStream(), null, null)
+                decrypter.DecryptFileAsync(new MemoryStream(), null!, null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: fileCredentials$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -215,7 +213,6 @@ namespace UnitTests
                 decrypter.DecryptFileAsync(new MemoryStream(), new FileCredentials(), new MemoryStream())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -224,12 +221,11 @@ namespace UnitTests
         {
             IDecrypter decrypter = new Decrypter();
 
-            FileCredentials fileCredentials = new FileCredentials {Secret = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "" };
             Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
                 decrypter.DecryptFileAsync(new MemoryStream(), fileCredentials, new MemoryStream())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: FileHash$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -237,7 +233,7 @@ namespace UnitTests
         public async Task Should_Throw_If_NonReadable_Data_Stream()
         {
             IDecrypter decrypter = new Decrypter();
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = "" };
 
             Exception exception;
             using (Stream encStream = File.OpenWrite("Files/s_dec6.driver_license-selfie.jpg"))
@@ -247,24 +243,19 @@ namespace UnitTests
                 );
             }
 
-            Assert.Matches(
-                @"^Stream does not support reading\.\s+Parameter name: encryptedContent$",
-                exception.Message
-            );
             Assert.IsType<ArgumentException>(exception);
         }
 
         [Fact(DisplayName = "Should throw when seekable data stream is empty")]
         public async Task Should_Throw_If_Empty_Data_Stream()
         {
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = "" };
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
                 decrypter.DecryptFileAsync(new MemoryStream(), fileCredentials, new MemoryStream())
             );
 
-            Assert.Matches(@"^Stream is empty\.\s+Parameter name: encryptedContent$", exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -272,7 +263,7 @@ namespace UnitTests
         public async Task Should_Throw_If_Invalid_Seekable_Data_Stream_Length()
         {
             IDecrypter decrypter = new Decrypter();
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = "" };
 
             Exception exception;
             using (Stream encStream = new MemoryStream(new byte[16 - 1]))
@@ -290,13 +281,12 @@ namespace UnitTests
         public async Task Should_Throw_If_Null_Destination()
         {
             IDecrypter decrypter = new Decrypter();
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = "" };
 
             Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
                 decrypter.DecryptFileAsync(new MemoryStream(), fileCredentials, null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: destination$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -304,7 +294,7 @@ namespace UnitTests
         public async Task Should_Throw_If_NonWritable_Destination()
         {
             IDecrypter decrypter = new Decrypter();
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = "" };
 
             Exception exception;
             using (Stream destStream = File.OpenRead("Files/s_dec7.driver_license-selfie.jpg"))
@@ -314,7 +304,6 @@ namespace UnitTests
                 );
             }
 
-            Assert.Matches(@"^Stream does not support writing\.\s+Parameter name: destination$", exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -323,7 +312,7 @@ namespace UnitTests
         [InlineData("FooBarBazlg/H/pEaTJigo4mQJ0s8B+HGCWKTWtOTIdo=")]
         public async Task Should_Throw_If_Invalid_Secret(string secret)
         {
-            FileCredentials fileCredentials = new FileCredentials {Secret = secret, FileHash = ""};
+            FileCredentials fileCredentials = new FileCredentials { Secret = secret, FileHash = "" };
             IDecrypter decrypter = new Decrypter();
 
             await Assert.ThrowsAsync<FormatException>(() =>
@@ -336,7 +325,7 @@ namespace UnitTests
         [InlineData("FooBarBazlg/H/pEaTJigo4mQJ0s8B+HGCWKTWtOTIdo=")]
         public async Task Should_Throw_If_Invalid_Hash(string fileHash)
         {
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = fileHash};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = fileHash };
             IDecrypter decrypter = new Decrypter();
 
             await Assert.ThrowsAnyAsync<FormatException>(() =>
@@ -350,7 +339,7 @@ namespace UnitTests
         [InlineData("Zm9v")]
         public async Task Should_Throw_If_Invalid_Hash_Length(string fileHash)
         {
-            FileCredentials fileCredentials = new FileCredentials {Secret = "", FileHash = fileHash};
+            FileCredentials fileCredentials = new FileCredentials { Secret = "", FileHash = fileHash };
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
@@ -384,7 +373,7 @@ namespace UnitTests
                 base.Dispose(disposing);
             }
 
-            public override void Flush() => throw new NotSupportedException();
+            public override void Flush() {}
             public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
             public override void SetLength(long value) => throw new NotSupportedException();
             public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();

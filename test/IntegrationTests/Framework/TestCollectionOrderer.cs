@@ -53,7 +53,7 @@ namespace IntegrationTests.Framework
                     $"Collection \"{collection.DisplayName}\" not found in execution list.", nameof(collection));
             }
 
-            return (int) order;
+            return (int)order;
         }
     }
 }

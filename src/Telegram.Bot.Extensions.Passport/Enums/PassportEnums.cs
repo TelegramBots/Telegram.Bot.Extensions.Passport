@@ -1,11 +1,10 @@
-﻿// ReSharper disable once CheckNamespace
+// ReSharper disable once CheckNamespace
 
-namespace Telegram.Bot
+namespace Telegram.Bot;
+
+/// <summary>
+/// Provides constant values for Passport feature
+/// </summary>
+public static partial class PassportEnums
 {
-    /// <summary>
-    /// Provides constant values for Passport feature
-    /// </summary>
-    public static partial class PassportEnums
-    {
-    }
 }

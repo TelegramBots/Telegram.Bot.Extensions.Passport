@@ -269,10 +269,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
-                decrypter.DecryptCredentials(null, null)
+                decrypter.DecryptCredentials(null!, null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedCredentials$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -282,10 +281,9 @@ namespace UnitTests
             IDecrypter decrypter = new Decrypter();
 
             Exception exception = Assert.ThrowsAny<Exception>(() =>
-                decrypter.DecryptCredentials(new EncryptedCredentials(), null)
+                decrypter.DecryptCredentials(new EncryptedCredentials(), null!)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: key$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -298,7 +296,6 @@ namespace UnitTests
                 decrypter.DecryptCredentials(new EncryptedCredentials(), RSA.Create())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Data$", exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -316,8 +313,7 @@ namespace UnitTests
                 decrypter.DecryptCredentials(encryptedCredentials, RSA.Create())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
-            Assert.IsType<ArgumentNullException>(exception);
+            Assert.IsType<ArgumentException>(exception);
         }
 
         [Fact(DisplayName = "Should throw when null credentials hash is passed")]
@@ -335,11 +331,11 @@ namespace UnitTests
                 decrypter.DecryptCredentials(encryptedCredentials, RSA.Create())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Hash$", exception.Message);
-            Assert.IsType<ArgumentNullException>(exception);
+            Assert.IsType<ArgumentException>(exception);
         }
 
         [Fact(DisplayName = "Should throw when credentials data string is empty")]
+
         public void Should_Throw_If_Empty_Credentials_Data_String()
         {
             EncryptedCredentials encryptedCredentials = new EncryptedCredentials
@@ -355,7 +351,6 @@ namespace UnitTests
                 decrypter.DecryptCredentials(encryptedCredentials, RSA.Create())
             );
 
-            Assert.Matches(@"^Data is empty\.\s+Parameter name: Data$", exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 

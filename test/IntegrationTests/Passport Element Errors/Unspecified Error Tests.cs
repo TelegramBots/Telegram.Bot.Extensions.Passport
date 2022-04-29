@@ -2,14 +2,14 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
+using IntegrationTests.Framework;
 using System.Linq;
 using System.Threading.Tasks;
-using IntegrationTests.Framework;
 using Telegram.Bot;
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Requests;
+using Telegram.Bot.Requests.PassportErrors;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.Passport;
 using Telegram.Bot.Types.ReplyMarkups;
 using Xunit;
 
@@ -47,7 +47,7 @@ namespace IntegrationTests
             {
                 new PassportScopeElementOne(PassportEnums.Scope.BankStatement),
             });
-            AuthorizationRequestParameters authReq = new AuthorizationRequestParameters(
+            AuthorizationRequestParameters authReq = new(
                 botId: _fixture.BotUser.Id,
                 publicKey: publicKey,
                 nonce: "Test nonce for bank statement",
@@ -61,7 +61,7 @@ namespace IntegrationTests
                 "2. Open link in browser to redirect you back to Telegram passport\n" +
                 "3. Authorize bot to access the info",
                 ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Share via Passport",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
@@ -97,7 +97,7 @@ namespace IntegrationTests
                 _fixture.SupergroupChat,
                 "An error is set on the bank statement.\n" +
                 "You can see error message with opening the request link again.",
-                replyMarkup: (InlineKeyboardMarkup) InlineKeyboardButton.WithUrl(
+                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
                     "Passport Authorization Request",
                     $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
                 )
