@@ -272,7 +272,7 @@ namespace UnitTests
                 decrypter.DecryptCredentials(null, null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedCredentials$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("encryptedCredentials"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -285,7 +285,7 @@ namespace UnitTests
                 decrypter.DecryptCredentials(new EncryptedCredentials(), null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: key$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("key"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -298,7 +298,7 @@ namespace UnitTests
                 decrypter.DecryptCredentials(new EncryptedCredentials(), RSA.Create())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Data$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("Data"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -316,7 +316,7 @@ namespace UnitTests
                 decrypter.DecryptCredentials(encryptedCredentials, RSA.Create())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("Secret"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -335,7 +335,7 @@ namespace UnitTests
                 decrypter.DecryptCredentials(encryptedCredentials, RSA.Create())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Hash$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("Hash"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -355,7 +355,7 @@ namespace UnitTests
                 decrypter.DecryptCredentials(encryptedCredentials, RSA.Create())
             );
 
-            Assert.Matches(@"^Data is empty\.\s+Parameter name: Data$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgError("Data is empty", "Data"), exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 

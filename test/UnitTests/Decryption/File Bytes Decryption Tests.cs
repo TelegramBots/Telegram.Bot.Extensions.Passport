@@ -126,7 +126,7 @@ namespace UnitTests
                 decrypter.DecryptFile(null, null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedContent$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("encryptedContent"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -139,7 +139,7 @@ namespace UnitTests
                 decrypter.DecryptFile(new byte[0], null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: fileCredentials$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("fileCredentials"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -151,7 +151,7 @@ namespace UnitTests
                 decrypter.DecryptFile(new byte[0], new FileCredentials())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("Secret"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -165,7 +165,7 @@ namespace UnitTests
                 decrypter.DecryptFile(new byte[0], fileCredentials)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: FileHash$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("FileHash"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -179,7 +179,7 @@ namespace UnitTests
                 decrypter.DecryptFile(new byte[0], fileCredentials)
             );
 
-            Assert.Matches(@"^Data array is empty\.\s+Parameter name: encryptedContent$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgError("Data array is empty", "encryptedContent"), exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 

@@ -5,7 +5,7 @@
 using System;
 using System.Reflection;
 using System.Security.Cryptography;
-using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -149,7 +149,7 @@ namespace UnitTests
                 AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair) pemReader.ReadObject();
                 parameters = DotNetUtilities.ToRSAParameters(keyPair.Private as RsaPrivateCrtKeyParameters);
             }
-            string json = JsonConvert.SerializeObject(parameters);
+            string json = JsonSerializer.Serialize(parameters, FixtureHelpers.JsonOptions);
             _output.WriteLine("JSON value is:\n" + json);
 
             Assert.True(JToken.DeepEquals(
@@ -250,7 +250,7 @@ namespace UnitTests
 
             if (areAllFieldsSerializable)
             {
-                RSAParameters rsaParameters = JsonConvert.DeserializeObject<RSAParameters>(@"{
+                RSAParameters rsaParameters = JsonSerializer.Deserialize<RSAParameters>(@"{
                     ""D"":""nrXEeOl2Ky3iHu0679sqJRg0ZZnwM32Tp6IFxNGJEX6Liysm+Gl3GP4cwbi8tCo1DaPc7HNY5Ol9AkyB1H+tDZyTyr+N1fSR1B6aJwHz22a6XUcavct1WTqOicg4p2Yr9dx//R+bkp1NRKhnoHi+14BG1imaLB6/JQ8muwUZY8Ug/KMMTiVKKZZBUhK0P0/81Ij8Bb5uO65Av0XJzz55Yde0944OZKNZLPM6qPed0XPpQFdA6jjUZzn6bjNJrEnaB6UaNXay0cFCHYfqJD+bkyOMR3VjKY8ldgEt2iw5HYeeadSJlzvW4CNQ/xuvCfdw/T6+2aPN3+RnXl4CbuQJIQ=="",
                     ""DP"":""KZYZWbsy/boJSS3Z8N5tkeA19cq54KrSjZOJEnJJ4tyOUcr/3AXzixOANqbvK3jIg/qaTPHNOCdVVe8rWEkWPy8m2DXewst0EP5yJQ4KY++fRhhr9wVPIWBiGZng9HXu1bzCC7k9CuC7ccnhKN0jYRow3l/BmmZ93j1aFr/lk60="",
                     ""DQ"":""Y25KgzPjR0Ej902TINX5EjuoVGr0wdpnYC2w7AeeGwTqvA/CoXhb9++99DlifCZGfmz2Yr7daG/wEzSMgK/fSEUnTkSsVmdonpQ656hQM0cB6E37lmrRfRzphzp6U3/6ZwWYrHgXA5/HwX3FGi6hPeaPoB9bOGWHFbQIULAdBd0="",
@@ -259,7 +259,7 @@ namespace UnitTests
                     ""Modulus"":""0VElWoQA2SK1csG2/sY/wlssO1bjXRx+t+JlIgS6jLPCefyCAcZBv7ElcSPJQIPEXNwN2XdnTc2wEIjZ8bTgBlBqXppj471bJeX8Mi2uAxAqOUDuvGuqth+mq7DMqol3MNH5P9FO6li7nZxI1FX39u2r/4H4PXRiWx13gsVQRL6Clq2jcXFHc9CvNaCQEJX95jgQFAybal216EwlnnVVgiT/TNsfFjW41XJZsHUny9k+dAfyPzqAk54cgrvjgAHJayDWjapq90Fm/+e/DVQ6BHGkV0POQMkkBrvvhAIQu222j+03frm9b2yZrhX/qS01lyjW4VaQytGV0wlewV6BFw=="",
                     ""P"":""56MdiwsGari+fhab1/laCiJfml0HQPvDFl5mCvOxQzJ1t1u49j+cHIZyUVrbG6GSW7X8mJEKLnx8ZOEWqNkyLc71f7uSWytF2gW5qyY84JUQ4LS4UXz6nnjJbnwS776f9GqFQQon3MqSAT9KsDMXlymZk9Wz5TJaWn6i7FSwDaM="",
                     ""Q"":""51UN2sd3x/w/qArIRFoPsBGLgrl140reesnkFEDDKV5pvR3lkKmq/lWSWAU5E9iVA2cu+SZhSjKWpzTvWljmCW/zhqgiMuigOK42XQkvykO3ZhWliqjMu+OYwvS3vbcBFy75HvhC6+U9QXA7sIg0rcwVw00Rw8oob0P4J44NTf0=""
-                }");
+                }", FixtureHelpers.JsonOptions);
                 Assert.Equal(exponent, rsaParameters.Exponent);
                 Assert.Equal(mod, rsaParameters.Modulus);
                 Assert.Equal(p, rsaParameters.P);
@@ -271,10 +271,10 @@ namespace UnitTests
             }
             else
             {
-                RSAParameters rsaParameters = JsonConvert.DeserializeObject<RSAParameters>(@"{
+                RSAParameters rsaParameters = JsonSerializer.Deserialize<RSAParameters>(@"{
                     ""Exponent"":""AQAB"",
                     ""Modulus"":""0VElWoQA2SK1csG2/sY/wlssO1bjXRx+t+JlIgS6jLPCefyCAcZBv7ElcSPJQIPEXNwN2XdnTc2wEIjZ8bTgBlBqXppj471bJeX8Mi2uAxAqOUDuvGuqth+mq7DMqol3MNH5P9FO6li7nZxI1FX39u2r/4H4PXRiWx13gsVQRL6Clq2jcXFHc9CvNaCQEJX95jgQFAybal216EwlnnVVgiT/TNsfFjW41XJZsHUny9k+dAfyPzqAk54cgrvjgAHJayDWjapq90Fm/+e/DVQ6BHGkV0POQMkkBrvvhAIQu222j+03frm9b2yZrhX/qS01lyjW4VaQytGV0wlewV6BFw==""
-                }");
+                }", FixtureHelpers.JsonOptions);
                 Assert.Equal(exponent, rsaParameters.Exponent);
                 Assert.Equal(mod, rsaParameters.Modulus);
             }
@@ -372,11 +372,11 @@ namespace UnitTests
                 IQ = inverseQ,
             };
 
-            string json = JsonConvert.SerializeObject(keyParameters);
+            string json = JsonSerializer.Serialize(keyParameters, FixtureHelpers.JsonOptions);
             _output.WriteLine("JSON value is:\n" + json);
 
-            Assert.True(JToken.DeepEquals(
-                JToken.Parse(@"{
+            Assert.True(JsonNode.DeepEquals(
+                JsonNode.Parse(@"{
                     ""E"":""AQAB"",
                     ""M"":""0VElWoQA2SK1csG2/sY/wlssO1bjXRx+t+JlIgS6jLPCefyCAcZBv7ElcSPJQIPEXNwN2XdnTc2wEIjZ8bTgBlBqXppj471bJeX8Mi2uAxAqOUDuvGuqth+mq7DMqol3MNH5P9FO6li7nZxI1FX39u2r/4H4PXRiWx13gsVQRL6Clq2jcXFHc9CvNaCQEJX95jgQFAybal216EwlnnVVgiT/TNsfFjW41XJZsHUny9k+dAfyPzqAk54cgrvjgAHJayDWjapq90Fm/+e/DVQ6BHGkV0POQMkkBrvvhAIQu222j+03frm9b2yZrhX/qS01lyjW4VaQytGV0wlewV6BFw=="",
                     ""P"":""56MdiwsGari+fhab1/laCiJfml0HQPvDFl5mCvOxQzJ1t1u49j+cHIZyUVrbG6GSW7X8mJEKLnx8ZOEWqNkyLc71f7uSWytF2gW5qyY84JUQ4LS4UXz6nnjJbnwS776f9GqFQQon3MqSAT9KsDMXlymZk9Wz5TJaWn6i7FSwDaM="",
@@ -386,7 +386,7 @@ namespace UnitTests
                     ""DQ"":""Y25KgzPjR0Ej902TINX5EjuoVGr0wdpnYC2w7AeeGwTqvA/CoXhb9++99DlifCZGfmz2Yr7daG/wEzSMgK/fSEUnTkSsVmdonpQ656hQM0cB6E37lmrRfRzphzp6U3/6ZwWYrHgXA5/HwX3FGi6hPeaPoB9bOGWHFbQIULAdBd0="",
                     ""IQ"":""0153qXwUkMN3FQRlWI8GwcUMaC/RgVEzIY0WkH6lAVhiVTEmsYm/unQG2jCAFcNAyDChvLU2DRIxKchrh70obeL2UYGqwjag5NdxCmPNC5Mjr9h/ydNa7YGmZOvh+tlucxpyG7c6HQdp+yWrCuetSHP0HKxLYXguEJq/kV3tN6Y=""
                 }"),
-                JToken.Parse(json)
+                JsonNode.Parse(json)
             ));
         }
 
@@ -470,7 +470,7 @@ namespace UnitTests
                 195, 77, 17, 195, 202, 40, 111, 67, 248, 39, 142, 13, 77, 253
             };
 
-            EncryptionKeyParameters keyParameters = JsonConvert.DeserializeObject<EncryptionKeyParameters>(@"{
+            EncryptionKeyParameters keyParameters = JsonSerializer.Deserialize<EncryptionKeyParameters>(@"{
                     ""E"":""AQAB"",
                     ""M"":""0VElWoQA2SK1csG2/sY/wlssO1bjXRx+t+JlIgS6jLPCefyCAcZBv7ElcSPJQIPEXNwN2XdnTc2wEIjZ8bTgBlBqXppj471bJeX8Mi2uAxAqOUDuvGuqth+mq7DMqol3MNH5P9FO6li7nZxI1FX39u2r/4H4PXRiWx13gsVQRL6Clq2jcXFHc9CvNaCQEJX95jgQFAybal216EwlnnVVgiT/TNsfFjW41XJZsHUny9k+dAfyPzqAk54cgrvjgAHJayDWjapq90Fm/+e/DVQ6BHGkV0POQMkkBrvvhAIQu222j+03frm9b2yZrhX/qS01lyjW4VaQytGV0wlewV6BFw=="",
                     ""P"":""56MdiwsGari+fhab1/laCiJfml0HQPvDFl5mCvOxQzJ1t1u49j+cHIZyUVrbG6GSW7X8mJEKLnx8ZOEWqNkyLc71f7uSWytF2gW5qyY84JUQ4LS4UXz6nnjJbnwS776f9GqFQQon3MqSAT9KsDMXlymZk9Wz5TJaWn6i7FSwDaM="",
@@ -479,7 +479,7 @@ namespace UnitTests
                     ""DP"":""KZYZWbsy/boJSS3Z8N5tkeA19cq54KrSjZOJEnJJ4tyOUcr/3AXzixOANqbvK3jIg/qaTPHNOCdVVe8rWEkWPy8m2DXewst0EP5yJQ4KY++fRhhr9wVPIWBiGZng9HXu1bzCC7k9CuC7ccnhKN0jYRow3l/BmmZ93j1aFr/lk60="",
                     ""DQ"":""Y25KgzPjR0Ej902TINX5EjuoVGr0wdpnYC2w7AeeGwTqvA/CoXhb9++99DlifCZGfmz2Yr7daG/wEzSMgK/fSEUnTkSsVmdonpQ656hQM0cB6E37lmrRfRzphzp6U3/6ZwWYrHgXA5/HwX3FGi6hPeaPoB9bOGWHFbQIULAdBd0="",
                     ""IQ"":""0153qXwUkMN3FQRlWI8GwcUMaC/RgVEzIY0WkH6lAVhiVTEmsYm/unQG2jCAFcNAyDChvLU2DRIxKchrh70obeL2UYGqwjag5NdxCmPNC5Mjr9h/ydNa7YGmZOvh+tlucxpyG7c6HQdp+yWrCuetSHP0HKxLYXguEJq/kV3tN6Y=""
-            }");
+            }", FixtureHelpers.JsonOptions);
 
             Assert.Equal(exponent, keyParameters.E);
             Assert.Equal(mod, keyParameters.M);

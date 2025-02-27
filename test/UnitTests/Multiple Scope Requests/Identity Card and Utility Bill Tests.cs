@@ -5,7 +5,6 @@
 using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
 using Xunit;
@@ -82,7 +81,7 @@ namespace UnitTests
             Credentials credentials =
                 decrypter.DecryptCredentials(passportData.Credentials, EncryptionKey.RsaPrivateKey);
 
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             IdDocumentData documentData = decrypter.DecryptData<IdDocumentData>(
                 idCardEl.Data,
@@ -98,12 +97,12 @@ namespace UnitTests
         public async Task Should_Decrypt_Identity_Card_Element_Front_Side()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             Assert.NotNull(idCardEl.FrontSide);
             Assert.Equal("DgADAQADGwADQnBBRBexahgtkoPgAg", idCardEl.FrontSide.FileId);
             Assert.InRange(idCardEl.FrontSide.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, idCardEl.FrontSide.FileSize);
+            Assert.Equal(null, idCardEl.FrontSide.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -138,12 +137,12 @@ namespace UnitTests
         public async Task Should_Decrypt_Identity_Card_Element_Reverse_Side()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             Assert.NotNull(idCardEl.ReverseSide);
             Assert.Equal("DgADAQADKAADNfRARK9jbzh5AAFqvAI", idCardEl.ReverseSide.FileId);
             Assert.InRange(idCardEl.ReverseSide.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, idCardEl.ReverseSide.FileSize);
+            Assert.Equal(null, idCardEl.ReverseSide.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -179,12 +178,12 @@ namespace UnitTests
         public async Task Should_decrypt_identity_card_element_selfie()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == "identity_card");
+            EncryptedPassportElement idCardEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.IdentityCard);
 
             Assert.NotNull(idCardEl.Selfie);
             Assert.Equal("DgADAQADNAADA1BJRCUHz9fqxiqJAg", idCardEl.Selfie.FileId);
             Assert.InRange(idCardEl.Selfie.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, idCardEl.Selfie.FileSize);
+            Assert.Equal(null, idCardEl.Selfie.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -219,14 +218,14 @@ namespace UnitTests
         public async Task Should_Decrypt_Utility_Bill_Element_File()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == "utility_bill");
+            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.UtilityBill);
 
             Assert.NotNull(billElement.Files);
             PassportFile scanFile = Assert.Single(billElement.Files);
 
             Assert.Equal("DgADAQADQAADPupBRDIrCqSwkb4iAg", scanFile.FileId);
             Assert.InRange(scanFile.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, scanFile.FileSize);
+            Assert.Equal(null, scanFile.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -263,14 +262,14 @@ namespace UnitTests
         public async Task Should_Decrypt_Utility_Bill_Element_Translation()
         {
             PassportData passportData = GetPassportData();
-            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == "utility_bill");
+            EncryptedPassportElement billElement = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.UtilityBill);
 
             Assert.NotNull(billElement.Translation);
             PassportFile translationFile = Assert.Single(billElement.Translation);
 
             Assert.Equal("DgADAQADOwADGV9BRP4b7RLGAtUKAg", translationFile.FileId);
             Assert.InRange(translationFile.FileDate, new DateTime(2018, 8, 30), new DateTime(2018, 8, 31));
-            Assert.Equal(0, translationFile.FileSize);
+            Assert.Equal(null, translationFile.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials =
@@ -304,7 +303,7 @@ namespace UnitTests
         }
 
         static PassportData GetPassportData() =>
-            JsonConvert.DeserializeObject<PassportData>(@"
+            JsonSerializer.Deserialize<PassportData>(@"
 {
   ""data"": [
     {
@@ -347,6 +346,6 @@ namespace UnitTests
     ""secret"": ""QcOxuwd9OiB/9akjMzyY7wR4NcrpbhpjQuO9yOWhe0u34VVLraTr3gwkBNv0eKEZHoyulhhLr9tkSSO+BYZAp4engued3eL11jqQkosJQBCPg8m1arIvNM+/E5Kw8dnF7dEx9v8t9QA11kSfAqdgnqCtSAq6GGGu5ixuYM1VMbk270qcm3F7wrLN+9YQwUVkiai8WvdA7Q7BnywsbrekKOam95tiFeA7jE8Cf78D6gh47/uirO/KD3Hwl1PNo1f8ORgFf8EixSQuV5Gh8HxEY1uE+yfOxksG5MiWOC5A1lNQuVcZqzVfbReRvs2M2tvX5KeeN+/xsIps+Xp+szWSaw==""
   }
 }
-        ");
+        ", JsonBotAPI.Options);
     }
 }

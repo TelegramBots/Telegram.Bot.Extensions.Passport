@@ -6,7 +6,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
 using Xunit;
@@ -69,7 +68,7 @@ namespace UnitTests
             Credentials credentials =
                 decrypter.DecryptCredentials(passportData.Credentials, EncryptionKey.RsaPrivateKey);
 
-            EncryptedPassportElement licenseEl = Assert.Single(passportData.Data, el => el.Type == "driver_license");
+            EncryptedPassportElement licenseEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.DriverLicense);
 
             IdDocumentData licenseDoc = decrypter.DecryptData<IdDocumentData>(
                 encryptedData: licenseEl.Data,
@@ -203,7 +202,7 @@ namespace UnitTests
         }
 
         static PassportData GetPassportData() =>
-            JsonConvert.DeserializeObject<PassportData>(@"
+            JsonSerializer.Deserialize<PassportData>(@"
 {
   ""data"": [
     {
@@ -236,6 +235,6 @@ namespace UnitTests
     ""secret"": ""J4j2cRBWuNLRc6yXsCL8RgzKSDZAlS27uFqFw3pMs+w3ScHDLcQgk/6+QidKSAzX0EccS6rbZ0UTDoSEptvdUT61A4hqMG61kbczf0UAopVQAeqlTkbZfgiUUXj5hpAKJI2Z/o78UWzRH6hoFhqPN1T+zs4FAhBEbv6nF1K2Rav8SOmE5OXa7B4a31FhH/1b47uAT1AxskzJZ6LjY6UrgkHU4/em413L0Boyl/nh1PNmgoTFCd3S+CnujpyZW67rBuNodFzJAEzXTe8M4bm/diGXNjht+mq0vB8dnwkGcNKFNVv6wWqvNWY8AZdJDdZChW+N4weATQGUAAgNQax1Tw==""
   }
 }
-            ");
+            ", JsonBotAPI.Options);
     }
 }

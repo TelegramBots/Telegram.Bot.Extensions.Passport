@@ -190,7 +190,7 @@ namespace UnitTests
                 decrypter.DecryptFileAsync(null, null, null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedContent$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("encryptedContent"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -203,7 +203,7 @@ namespace UnitTests
                 decrypter.DecryptFileAsync(new MemoryStream(), null, null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: fileCredentials$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("fileCredentials"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -215,7 +215,7 @@ namespace UnitTests
                 decrypter.DecryptFileAsync(new MemoryStream(), new FileCredentials(), new MemoryStream())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("Secret"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -229,7 +229,7 @@ namespace UnitTests
                 decrypter.DecryptFileAsync(new MemoryStream(), fileCredentials, new MemoryStream())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: FileHash$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("FileHash"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -247,10 +247,7 @@ namespace UnitTests
                 );
             }
 
-            Assert.Matches(
-                @"^Stream does not support reading\.\s+Parameter name: encryptedContent$",
-                exception.Message
-            );
+            Assert.Matches(FixtureHelpers.ArgError("Stream does not support reading", "encryptedContent"), exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -264,7 +261,7 @@ namespace UnitTests
                 decrypter.DecryptFileAsync(new MemoryStream(), fileCredentials, new MemoryStream())
             );
 
-            Assert.Matches(@"^Stream is empty\.\s+Parameter name: encryptedContent$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgError("Stream is empty", "encryptedContent"), exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -296,7 +293,7 @@ namespace UnitTests
                 decrypter.DecryptFileAsync(new MemoryStream(), fileCredentials, null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: destination$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("destination"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -314,7 +311,7 @@ namespace UnitTests
                 );
             }
 
-            Assert.Matches(@"^Stream does not support writing\.\s+Parameter name: destination$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgError("Stream does not support writing", "destination"), exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -384,7 +381,7 @@ namespace UnitTests
                 base.Dispose(disposing);
             }
 
-            public override void Flush() => throw new NotSupportedException();
+            public override void Flush() { }
             public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
             public override void SetLength(long value) => throw new NotSupportedException();
             public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();

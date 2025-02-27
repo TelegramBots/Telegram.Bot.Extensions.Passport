@@ -2,7 +2,6 @@
 // ReSharper disable StringLiteralTypo
 
 using System;
-using Newtonsoft.Json;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
@@ -51,7 +50,7 @@ namespace UnitTests
                 decrypter.DecryptData<IDecryptedValue>(null, null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: encryptedData$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("encryptedData"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -64,7 +63,7 @@ namespace UnitTests
                 decrypter.DecryptData<IDecryptedValue>("", null)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: dataCredentials$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("dataCredentials"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -76,7 +75,7 @@ namespace UnitTests
                 decrypter.DecryptData<IDecryptedValue>("", new DataCredentials())
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: Secret$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("Secret"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -90,7 +89,7 @@ namespace UnitTests
                 decrypter.DecryptData<IDecryptedValue>("", dataCredentials)
             );
 
-            Assert.Matches(@"^Value cannot be null\.\s+Parameter name: DataHash$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgNull("DataHash"), exception.Message);
             Assert.IsType<ArgumentNullException>(exception);
         }
 
@@ -104,7 +103,7 @@ namespace UnitTests
                 decrypter.DecryptData<IDecryptedValue>("", dataCredentials)
             );
 
-            Assert.Matches(@"^Data is empty\.\s+Parameter name: encryptedData$", exception.Message);
+            Assert.Matches(FixtureHelpers.ArgError("Data is empty", "encryptedData"), exception.Message);
             Assert.IsType<ArgumentException>(exception);
         }
 
@@ -228,7 +227,7 @@ namespace UnitTests
             };
 
             IDecrypter decrypter = new Decrypter();
-            Assert.Throws<JsonSerializationException>(() =>
+            Assert.Throws<NotSupportedException>(() =>
                 decrypter.DecryptData<IDecryptedValue>(data, dataCredentials)
             );
         }

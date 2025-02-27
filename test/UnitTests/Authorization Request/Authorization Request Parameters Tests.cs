@@ -1,6 +1,6 @@
 // ReSharper disable StringLiteralTypo
 
-using Telegram.Bot.Passport.Request;
+using Telegram.Bot.Types.Passport;
 using Xunit;
 
 namespace UnitTests.Authorization_Request
@@ -20,7 +20,7 @@ namespace UnitTests.Authorization_Request
                 123,
                 "PUB KEY",
                 "/Nonce!/",
-                new PassportScope(new IPassportScopeElement[0])
+                new PassportScope { Data = [], V = 1 }
             );
 
             Assert.Equal(123, requestParameters.BotId);

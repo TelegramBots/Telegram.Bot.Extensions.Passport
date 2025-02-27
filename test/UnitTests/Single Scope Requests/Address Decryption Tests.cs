@@ -3,7 +3,6 @@
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 
-using Newtonsoft.Json;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
 using Xunit;
@@ -47,7 +46,7 @@ namespace UnitTests
             Credentials credentials =
                 decrypter.DecryptCredentials(passportData.Credentials, EncryptionKey.RsaPrivateKey);
 
-            EncryptedPassportElement addressEl = Assert.Single(passportData.Data, el => el.Type == "address");
+            EncryptedPassportElement addressEl = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.Address);
 
             ResidentialAddress residentialAddress = decrypter.DecryptData<ResidentialAddress>(
                 encryptedData: addressEl.Data,
@@ -63,7 +62,7 @@ namespace UnitTests
         }
 
         static PassportData GetPassportData() =>
-            JsonConvert.DeserializeObject<PassportData>(@"
+            JsonSerializer.Deserialize<PassportData>(@"
 {
   ""data"": [
     {
@@ -78,6 +77,6 @@ namespace UnitTests
     ""secret"": ""gBm0me6sRCLjtLcDvaSI812OoVvXMVKTa0Zo5sq4N6ZczfRoBxF0Gh/05OiAebXuL5RSJsqcuIQxYkEAOO/HDi+lLScE1aF1t1YvJw9Hb0Ct0wf/ucaNVDigGTtOZXbza83wy59kUD9EqxLD4j7nNqzxgPugzGRqpVxgxLJAExN5fPa5jwe8qHIe09rfm4e7cr9K3+oN5UHorMez+aI0xpu3z9Vbmq9mGC41DuIxJ11ERVqDGwdyjdVwdo7X5kSjkopJFRR8kH2CYuufC8YDOSoMyFyFdsM9Y35e7PVA+u0AE3O1wWkE0x1XKdNn87z7aSmQe3zna4EcfexfsUee3g==""
   }
 }
-            ");
+            ", JsonBotAPI.Options);
     }
 }

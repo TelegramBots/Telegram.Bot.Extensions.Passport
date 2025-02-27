@@ -4,7 +4,6 @@
 // ReSharper disable StringLiteralTypo
 
 using System;
-using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Passport;
 using Telegram.Bot.Types.Passport;
@@ -49,7 +48,7 @@ namespace UnitTests
             Credentials credentials =
                 decrypter.DecryptCredentials(passportData.Credentials, EncryptionKey.RsaPrivateKey);
 
-            EncryptedPassportElement element = Assert.Single(passportData.Data, el => el.Type == "personal_details");
+            EncryptedPassportElement element = Assert.Single(passportData.Data, el => el.Type == EncryptedPassportElementType.PersonalDetails);
 
             PersonalDetails personalDetails = decrypter.DecryptData<PersonalDetails>(
                 encryptedData: element.Data,
@@ -63,15 +62,15 @@ namespace UnitTests
             Assert.Empty(personalDetails.MiddleName);
             Assert.Empty(personalDetails.MiddleNameNative);
             Assert.Equal("male", personalDetails.Gender);
-            Assert.Equal(PassportEnums.Gender.Male, personalDetails.Gender);
+            //Assert.Equal(PassportEnums.Gender.Male, personalDetails.Gender);
             Assert.Equal("US", personalDetails.CountryCode); // U.S.A
             Assert.Equal("IR", personalDetails.ResidenceCountryCode); // Iran
             Assert.Equal("30.07.1990", personalDetails.BirthDate);
-            Assert.InRange(personalDetails.Birthdate, new DateTime(1990, 7, 30), new DateTime(1990, 7, 30, 1, 0, 0));
+            Assert.InRange(personalDetails.Birthday, new DateTime(1990, 7, 30), new DateTime(1990, 7, 30, 1, 0, 0));
         }
 
         static PassportData GetPassportData() =>
-            JsonConvert.DeserializeObject<PassportData>(@"
+            JsonSerializer.Deserialize<PassportData>(@"
 {
   ""data"": [
     {
@@ -86,6 +85,6 @@ namespace UnitTests
     ""secret"": ""Sr/17/6JrtKCP7X/e9c7XIMAdigeI1QO6u43prhnS9wuNralsZhvPnKIc3qL7A2jcgML273TM2blHywbzt6cAqLxjCntyjSay0FyMnctarY3soCkCZsUynMsPC9g39CTVBCUXbZZ6tWZ8mgQ9WDXeMVTRaLXLBr9EZdICauFGsln/LaopfU9CvdYXQ0PcdhCFNbisuPwXOqd5jUu0x49+sPAc4V68TsnWRUC3CYEhEfqkRmtomM8UV+/JyHk0zYdiRxarGzAXfgdXJwjfjXARhERA/hZRYKH+w9vsPpZWdqQg7zSi5EU8Fr2Cs3IzAes+txLUekFprWsKff7j21KXg==""
   }
 }
-            ");
+            ", JsonBotAPI.Options);
     }
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deps", "deps", "{2CAB4FDA-D625-40D2-BC54-68FE375D821B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telegram.Bot", "deps\Telegram.Bot\src\Telegram.Bot\Telegram.Bot.csproj", "{EC89AC57-7C57-4612-97BA-23FB5E7532EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telegram.Bot", "..\Telegram.Bot\src\Telegram.Bot\Telegram.Bot.csproj", "{EC89AC57-7C57-4612-97BA-23FB5E7532EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{219FA372-F501-4189-A114-9F4BC224374A}"
 EndProject
