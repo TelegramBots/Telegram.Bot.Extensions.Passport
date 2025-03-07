@@ -36,13 +36,9 @@ namespace Quickstart
         static async Task Bot_OnMessage(Message message, UpdateType type)
         {
             if (message.Text != null)
-            {
                 await SendAuthorizationRequestAsync(message.From.Id);
-            }
             else if (message.PassportData != null)
-            {
                 await DecryptPassportDataAsync(message);
-            }
         }
 
         static async Task SendAuthorizationRequestAsync(long userId)
@@ -55,25 +51,15 @@ namespace Quickstart
                     new PassportScopeElementOne(EncryptedPassportElementType.PhoneNumber),
                 ]
             };
-            AuthorizationRequestParameters authReq = new AuthorizationRequestParameters(
-                botId: _botClient.BotId,
-                publicKey: PublicKey,
-                nonce: "Test nonce for this demo",
-                scope: scope
-            );
+            var authReq = new AuthorizationRequestParameters(_botClient.BotId, PublicKey, "Test nonce for this demo", scope);
 
-            await _botClient.SendMessage(
-                userId,
-                "Share your *residential address* and *phone number* with bot using Telegram Passport.\n\n" +
-                "1. Click inline button\n" +
-                "2. Open link in browser so it redirects you to Telegram Passport\n" +
-                "3. Authorize bot to access the info",
-                ParseMode.Markdown,
-                replyMarkup: (InlineKeyboardMarkup)InlineKeyboardButton.WithUrl(
-                    "Share via Passport",
-                    $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"
-                )
-            );
+            await _botClient.SendMessage(userId, """
+                Share your *residential address* and *phone number* with bot using Telegram Passport.
+
+                1. Click inline button
+                2. Open link in browser so it redirects you to Telegram Passport3. Authorize bot to access the info
+                """, ParseMode.Markdown,
+                replyMarkup: new InlineKeyboardButton("Share via Passport", $"https://telegrambots.github.io/Telegram.Bot.Extensions.Passport/redirect.html?{authReq.Query}"));
         }
 
         static async Task DecryptPassportDataAsync(Message message)
@@ -81,39 +67,27 @@ namespace Quickstart
             Decrypter decrypter = new Decrypter();
 
             // Step 1: Decrypt credentials
-            Credentials credentials = decrypter.DecryptCredentials(
-                message.PassportData.Credentials,
-                GetRsaPrivateKey()
-            );
+            Credentials credentials = decrypter.DecryptCredentials(message.PassportData.Credentials, GetRsaPrivateKey());
 
             // Step 2: Validate nonce
             if (credentials.Nonce != "Test nonce for this demo")
-            {
                 throw new Exception($"Invalid nonce: \"{credentials.Nonce}\".");
-            }
 
             // Step 3: Decrypt residential address using credentials
-            EncryptedPassportElement addressElement = message.PassportData.Data.Single(
-                el => el.Type == EncryptedPassportElementType.Address
-            );
-            ResidentialAddress address = decrypter.DecryptData<ResidentialAddress>(
-                encryptedData: addressElement.Data,
-                dataCredentials: credentials.SecureData.Address.Data
-            );
+            var addressElement = message.PassportData.Data.Single(el => el.Type == EncryptedPassportElementType.Address);
+            var address = decrypter.DecryptData<ResidentialAddress>(addressElement.Data, credentials.SecureData.Address.Data);
 
             // Step 4: Get phone number
-            string phoneNumber = message.PassportData.Data.Single(
-                el => el.Type == EncryptedPassportElementType.PhoneNumber
-            ).PhoneNumber;
+            var phoneNumber = message.PassportData.Data.Single(el => el.Type == EncryptedPassportElementType.PhoneNumber).PhoneNumber;
 
-            await _botClient.SendMessage(
-                message.From.Id,
-                "Your 🏠 address is:\n" +
-                $"{address.StreetLine1}\n" +
-                $"{address.City}, {address.CountryCode}\n" +
-                $"{address.PostCode}\n\n" +
-                $"📱 {phoneNumber}"
-            );
+            await _botClient.SendMessage(message.From.Id, $"""
+                Your 🏠 address is:
+                {address.StreetLine1}
+                {address.City}, {address.CountryCode}
+                {address.PostCode}
+
+                📱 {phoneNumber}
+                """);
         }
 
         static RSA GetRsaPrivateKey()
