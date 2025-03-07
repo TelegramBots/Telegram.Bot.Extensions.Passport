@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BouncyCastle" Version="1.8.2"/>
-    <PackageReference Include="Telegram.Bot.Extensions.Passport" Version="1.0.0"/>
+    <PackageReference Include="Telegram.Bot" Version="22.5.0-dev.13" />
   </ItemGroup>
 </Project>

@@ -1,21 +1,14 @@
 /* Telegram Passport Quickstart. Read the documentations at:
- * https://telegrambots.github.io/book/4/passport/quickstart.html
+ * https://telegrambots.github.io/book/4/passport/
  */
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Security;
 using Telegram.Bot;
-using Telegram.Bot.Args;
 using Telegram.Bot.Passport;
-using Telegram.Bot.Passport.Request;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
@@ -25,41 +18,43 @@ namespace Quickstart
 {
     class Program
     {
-        static ITelegramBotClient _botClient;
+        static TelegramBotClient _botClient;
 
         static void Main()
         {
             _botClient = new TelegramBotClient("YOUR_ACCESS_TOKEN_HERE");
 
-            User me = _botClient.GetMeAsync().Result;
+            User me = _botClient.GetMe().Result;
             Console.WriteLine(
                 $"Hello, World! I am user {me.Id} and my name is {me.FirstName}."
             );
 
             _botClient.OnMessage += Bot_OnMessage;
-            _botClient.StartReceiving();
             Thread.Sleep(int.MaxValue);
         }
 
-        static async void Bot_OnMessage(object sender, MessageEventArgs e)
+        static async Task Bot_OnMessage(Message message, UpdateType type)
         {
-            if (e.Message.Text != null)
+            if (message.Text != null)
             {
-                await SendAuthorizationRequestAsync(e.Message.From.Id);
+                await SendAuthorizationRequestAsync(message.From.Id);
             }
-            else if (e.Message.PassportData != null)
+            else if (message.PassportData != null)
             {
-                await DecryptPassportDataAsync(e.Message);
+                await DecryptPassportDataAsync(message);
             }
         }
 
-        static async Task SendAuthorizationRequestAsync(int userId)
+        static async Task SendAuthorizationRequestAsync(long userId)
         {
-            PassportScope scope = new PassportScope(new[]
+            PassportScope scope = new PassportScope
             {
-                new PassportScopeElementOne(PassportEnums.Scope.Address),
-                new PassportScopeElementOne(PassportEnums.Scope.PhoneNumber),
-            });
+                Data =
+                [
+                    new PassportScopeElementOne(EncryptedPassportElementType.Address),
+                    new PassportScopeElementOne(EncryptedPassportElementType.PhoneNumber),
+                ]
+            };
             AuthorizationRequestParameters authReq = new AuthorizationRequestParameters(
                 botId: _botClient.BotId,
                 publicKey: PublicKey,
@@ -67,7 +62,7 @@ namespace Quickstart
                 scope: scope
             );
 
-            await _botClient.SendTextMessageAsync(
+            await _botClient.SendMessage(
                 userId,
                 "Share your *residential address* and *phone number* with bot using Telegram Passport.\n\n" +
                 "1. Click inline button\n" +
@@ -83,7 +78,7 @@ namespace Quickstart
 
         static async Task DecryptPassportDataAsync(Message message)
         {
-            IDecrypter decrypter = new Decrypter();
+            Decrypter decrypter = new Decrypter();
 
             // Step 1: Decrypt credentials
             Credentials credentials = decrypter.DecryptCredentials(
@@ -99,7 +94,7 @@ namespace Quickstart
 
             // Step 3: Decrypt residential address using credentials
             EncryptedPassportElement addressElement = message.PassportData.Data.Single(
-                el => el.Type == PassportEnums.Scope.Address
+                el => el.Type == EncryptedPassportElementType.Address
             );
             ResidentialAddress address = decrypter.DecryptData<ResidentialAddress>(
                 encryptedData: addressElement.Data,
@@ -108,10 +103,10 @@ namespace Quickstart
 
             // Step 4: Get phone number
             string phoneNumber = message.PassportData.Data.Single(
-                el => el.Type == PassportEnums.Scope.PhoneNumber
+                el => el.Type == EncryptedPassportElementType.PhoneNumber
             ).PhoneNumber;
 
-            await _botClient.SendTextMessageAsync(
+            await _botClient.SendMessage(
                 message.From.Id,
                 "Your 🏠 address is:\n" +
                 $"{address.StreetLine1}\n" +
@@ -123,10 +118,8 @@ namespace Quickstart
 
         static RSA GetRsaPrivateKey()
         {
-            PemReader pemReader = new PemReader(new StringReader(PrivateKey));
-            AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair)pemReader.ReadObject();
-            RSAParameters parameters = DotNetUtilities.ToRSAParameters(keyPair.Private as RsaPrivateCrtKeyParameters);
-            RSA rsa = RSA.Create(parameters);
+            RSA rsa = RSA.Create();
+            rsa.ImportFromPem(PrivateKey);
             return rsa;
         }
 
