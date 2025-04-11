@@ -18,18 +18,18 @@ namespace Quickstart
 {
     class Program
     {
-        static TelegramBotClient _botClient;
+        static TelegramBotClient bot;
 
         static void Main()
         {
-            _botClient = new TelegramBotClient("YOUR_ACCESS_TOKEN_HERE");
+            bot = new TelegramBotClient("YOUR_ACCESS_TOKEN_HERE");
 
-            User me = _botClient.GetMe().Result;
+            User me = bot.GetMe().Result;
             Console.WriteLine(
                 $"Hello, World! I am user {me.Id} and my name is {me.FirstName}."
             );
 
-            _botClient.OnMessage += Bot_OnMessage;
+            bot.OnMessage += Bot_OnMessage;
             Thread.Sleep(int.MaxValue);
         }
 
@@ -51,9 +51,9 @@ namespace Quickstart
                     new PassportScopeElementOne(EncryptedPassportElementType.PhoneNumber),
                 ]
             };
-            var authReq = new AuthorizationRequestParameters(_botClient.BotId, PublicKey, "Test nonce for this demo", scope);
+            var authReq = new AuthorizationRequestParameters(bot.BotId, PublicKey, "Test nonce for this demo", scope);
 
-            await _botClient.SendMessage(userId, """
+            await bot.SendMessage(userId, """
                 Share your *residential address* and *phone number* with bot using Telegram Passport.
 
                 1. Click inline button
@@ -64,10 +64,10 @@ namespace Quickstart
 
         static async Task DecryptPassportDataAsync(Message message)
         {
-            Decrypter decrypter = new Decrypter();
+            var decrypter = new Decrypter();
 
             // Step 1: Decrypt credentials
-            Credentials credentials = decrypter.DecryptCredentials(message.PassportData.Credentials, GetRsaPrivateKey());
+            var credentials = decrypter.DecryptCredentials(message.PassportData.Credentials, GetRsaPrivateKey());
 
             // Step 2: Validate nonce
             if (credentials.Nonce != "Test nonce for this demo")
@@ -80,7 +80,7 @@ namespace Quickstart
             // Step 4: Get phone number
             var phoneNumber = message.PassportData.Data.Single(el => el.Type == EncryptedPassportElementType.PhoneNumber).PhoneNumber;
 
-            await _botClient.SendMessage(message.From.Id, $"""
+            await bot.SendMessage(message.From.Id, $"""
                 Your 🏠 address is:
                 {address.StreetLine1}
                 {address.City}, {address.CountryCode}
